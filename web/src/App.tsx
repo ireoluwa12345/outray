@@ -1,7 +1,34 @@
 import "./App.css";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
+import { MousePointer2, Github } from "lucide-react";
+import { Terminal } from "./components/Terminal";
+import { WaitlistForm } from "./components/WaitlistForm";
+
+function BeamGroup({ interactive }: { interactive: boolean }) {
+  const group = useRef<THREE.Group>(null);
+
+  useFrame((state) => {
+    if (group.current) {
+      const maxRotation = Math.PI / 8;
+      const targetRotation = interactive ? state.mouse.y * maxRotation : 0;
+
+      group.current.rotation.z = THREE.MathUtils.lerp(
+        group.current.rotation.z,
+        targetRotation,
+        0.1,
+      );
+    }
+  });
+
+  return (
+    <group ref={group} position={[-10, 0, 0]}>
+      <Spotlight />
+      <Dust />
+    </group>
+  );
+}
 
 function Spotlight() {
   const mesh = useRef<THREE.Mesh>(null);
@@ -22,8 +49,7 @@ function Spotlight() {
   });
 
   return (
-    <mesh ref={mesh} position={[-4, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-      {/* radiusTop, radiusBottom, height, radialSegments, heightSegments, openEnded */}
+    <mesh ref={mesh} position={[8, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
       <cylinderGeometry args={[1.2, 5, 16, 64, 1, true]} />
       <shaderMaterial
         side={THREE.DoubleSide}
@@ -46,29 +72,24 @@ function Spotlight() {
           varying vec2 vUv;
           varying vec3 vPos;
 
-          // Simple pseudo-random noise
+
           float random(vec2 st) {
             return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
           }
 
           void main() {
-            // vUv.y goes from 0 (bottom/right) to 1 (top/left)
-            
-            // Fade out towards the right (end of beam)
+
             float beamLongitudinal = smoothstep(0.0, 0.6, vUv.y);
             
-            // Fade out at the very source (left) to avoid hard geometry edge
+
             float sourceSoftness = smoothstep(1.0, 0.85, vUv.y);
 
-            // Add some subtle "rays" or noise
             float noise = random(vec2(vUv.x * 20.0, 0.0)); 
             float ray = smoothstep(0.4, 0.6, noise) * 0.04;
             
-            // Base beam body
             float alpha = beamLongitudinal * sourceSoftness * 0.06;
             alpha += ray * beamLongitudinal * sourceSoftness;
             
-            // Soft core glow that fades before hitting the geometry edge
             float core = smoothstep(0.5, 0.85, vUv.y) * smoothstep(1.0, 0.85, vUv.y) * 0.15;
             alpha += core;
 
@@ -101,16 +122,14 @@ function Dust() {
 
   useFrame((state) => {
     if (mesh.current) {
-      // Slowly rotate the dust
       mesh.current.rotation.x = state.clock.elapsedTime * 0.05;
-      // Gentle horizontal float
       mesh.current.position.x =
-        Math.sin(state.clock.elapsedTime * 0.2) * 0.5 - 4;
+        8 + Math.sin(state.clock.elapsedTime * 0.2) * 0.5;
     }
   });
 
   return (
-    <points ref={mesh} position={[-4, 0, 0]}>
+    <points ref={mesh} position={[8, 0, 0]}>
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
@@ -131,19 +150,63 @@ function Dust() {
 }
 
 function App() {
+  const [interactive, setInteractive] = useState(() => {
+    const saved = localStorage.getItem("interactive-mode");
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("interactive-mode", JSON.stringify(interactive));
+  }, [interactive]);
+
   return (
-    <div className="relative flex items-center justify-center min-h-screen bg-black text-white overflow-hidden">
-      <div className="absolute inset-0 z-0">
+    <div className="relative flex items-center min-h-screen bg-black text-white overflow-hidden">
+      <div
+        className="absolute inset-0 z-0"
+        style={{ transform: "translateX(-10%)" }}
+      >
         <Canvas camera={{ position: [0, 0, 15], fov: 45 }}>
           <color attach="background" args={["#000000"]} />
-          <Spotlight />
-          <Dust />
+          <BeamGroup interactive={interactive} />
         </Canvas>
       </div>
 
-      <h1 className="relative z-10 text-8xl text-center font-medium opacity-80 tracking-tight">
-        Opensource <br /> Ngrok alternative
-      </h1>
+      <div className="absolute top-0 left-0 right-0 z-20 w-full max-w-7xl mx-auto px-12 py-8 flex justify-between items-center pointer-events-none">
+        <div className="text-2xl font-semibold tracking-tighter pointer-events-auto">
+          OutRay
+        </div>
+        <a
+          href="https://github.com/akinloluwami/outray"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors pointer-events-auto backdrop-blur-sm border border-white/10"
+        >
+          <Github size={18} />
+          <span className="text-sm font-medium">Star on GitHub</span>
+        </a>
+      </div>
+
+      <div className="relative z-10 flex items-center justify-between w-full max-w-7xl mx-auto px-12 pointer-events-none">
+        <div className="flex flex-col items-start gap-10">
+          <h1 className="text-9xl font-bold opacity-80 tracking-tight text-left">
+            Like Ngrok, <br /> but cooler.
+          </h1>
+          <WaitlistForm />
+        </div>
+
+        <Terminal />
+      </div>
+
+      <button
+        onClick={() => setInteractive(!interactive)}
+        className={`fixed bottom-8 right-8 p-4 rounded-full transition-all duration-300 pointer-events-auto z-50 ${
+          interactive
+            ? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.3)]"
+            : "bg-white/10 text-white hover:bg-white/20"
+        }`}
+      >
+        <MousePointer2 size={24} />
+      </button>
     </div>
   );
 }
