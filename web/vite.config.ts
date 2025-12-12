@@ -7,4 +7,7 @@ import tsConfigPaths from "vite-tsconfig-paths";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [tsConfigPaths(), tanstackStart(), viteReact(), tailwindcss()],
+  server: {
+    allowedHosts: ["outray.dev"],
+  },
 });
