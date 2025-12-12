@@ -13,6 +13,12 @@ console.log("🚨 BASE DOMAIN LOADED:", config.baseDomain);
 new WSHandler(httpServer, router);
 
 httpServer.on("request", (req, res) => {
+  const host = req.headers.host || "";
+  if (host.startsWith("api.")) {
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ status: "ok", version: "1.0.0" }));
+    return;
+  }
   proxy.handleRequest(req, res);
 });
 
