@@ -25,10 +25,10 @@ function DashboardLayout() {
   const title = path === "dash" ? "overview" : path;
 
   return (
-    <div className="min-h-screen bg-[#0F1115] text-gray-300 font-sans selection:bg-blue-500/30">
+    <div className="min-h-screen bg-black text-gray-300 font-sans selection:bg-blue-500/30">
       <div className="flex h-screen overflow-hidden">
-        {/* Sidebar */}
-        <aside className="w-64 border-r border-white/5 bg-[#0F1115] flex flex-col">
+
+        <aside className="w-64 border-r border-white/5 bg-black flex flex-col">
           <div className="p-4 flex items-center justify-between">
             <div className="flex items-center gap-3 px-2">
               <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
@@ -120,9 +120,9 @@ function DashboardLayout() {
           </div>
         </aside>
 
-        {/* Main Content */}
-        <main className="flex-1 flex flex-col min-w-0 bg-[#0F1115]">
-          <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-[#0F1115]">
+
+        <main className="flex-1 flex flex-col min-w-0 bg-black">
+          <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-black">
             <div className="flex items-center gap-4">
               <h1 className="text-xl font-semibold text-white capitalize">
                 {title}
