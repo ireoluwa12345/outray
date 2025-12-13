@@ -7,6 +7,7 @@ export interface HelloMessage {
 export interface OpenTunnelMessage {
   type: "open_tunnel";
   subdomain?: string;
+  apiKey?: string;
 }
 
 export interface TunnelOpenedMessage {
