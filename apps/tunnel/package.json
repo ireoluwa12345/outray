@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsup",
+    "build": "tsup && cp src/offline.html dist/",
     "start": "node dist/server.js"
   },
   "dependencies": {
