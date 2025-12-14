@@ -16,33 +16,33 @@ export class WSHandler {
     this.setupWebSocketServer();
   }
 
-  private async validateApiKey(apiKey: string): Promise<{
+  private async validateAuthToken(token: string): Promise<{
     valid: boolean;
-    userId?: string;
-    user?: any;
+    organizationId?: string;
+    organization?: any;
     error?: string;
   }> {
     try {
       const response = await fetch(`${this.webApiUrl}/tunnel/auth`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ apiKey }),
+        body: JSON.stringify({ token }),
       });
       return (await response.json()) as {
         valid: boolean;
-        userId?: string;
-        user?: any;
+        organizationId?: string;
+        organization?: any;
         error?: string;
       };
     } catch (error) {
-      console.error("Failed to validate API key:", error);
+      console.error("Failed to validate Auth Token:", error);
       return { valid: false, error: "Internal server error" };
     }
   }
 
   private async checkSubdomain(
     subdomain: string,
-    userId?: string,
+    organizationId?: string,
   ): Promise<{
     allowed: boolean;
     type?: "owned" | "available";
@@ -52,7 +52,7 @@ export class WSHandler {
       const response = await fetch(`${this.webApiUrl}/tunnel/check-subdomain`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subdomain, userId }),
+        body: JSON.stringify({ subdomain, organizationId }),
       });
       return (await response.json()) as {
         allowed: boolean;
@@ -76,12 +76,12 @@ export class WSHandler {
           if (message.type === "hello") {
             console.log(`Client connected: ${message.clientId}`);
           } else if (message.type === "open_tunnel") {
-            let userId: string | undefined;
+            let organizationId: string | undefined;
 
             if (message.apiKey) {
-              const authResult = await this.validateApiKey(message.apiKey);
+              const authResult = await this.validateAuthToken(message.apiKey);
               if (!authResult.valid) {
-                console.log(`Invalid API Key: ${authResult.error}`);
+                console.log(`Invalid Auth Token: ${authResult.error}`);
                 ws.send(
                   Protocol.encode({
                     type: "error",
@@ -92,8 +92,10 @@ export class WSHandler {
                 ws.close();
                 return;
               }
-              userId = authResult.userId;
-              console.log(`Authenticated user: ${authResult.user?.email}`);
+              organizationId = authResult.organizationId;
+              console.log(
+                `Authenticated organization: ${authResult.organization?.name}`,
+              );
             }
 
             let requestedSubdomain = message.subdomain;
@@ -102,7 +104,7 @@ export class WSHandler {
             if (requestedSubdomain) {
               const check = await this.checkSubdomain(
                 requestedSubdomain,
-                userId,
+                organizationId,
               );
 
               if (!check.allowed) {
