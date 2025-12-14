@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { json } from "@tanstack/react-start";
 import { eq } from "drizzle-orm";
 import { db } from "../../../db";
-import { apiKeys } from "../../../db/app-schema";
+import { authTokens } from "../../../db/app-schema";
 
 export const Route = createFileRoute("/api/tunnel/auth")({
   server: {
@@ -10,41 +10,41 @@ export const Route = createFileRoute("/api/tunnel/auth")({
       POST: async ({ request }) => {
         try {
           const body = await request.json();
-          const { apiKey } = body;
+          const { token } = body;
 
-          if (!apiKey) {
+          if (!token) {
             return json(
-              { valid: false, error: "Missing API key" },
+              { valid: false, error: "Missing Auth Token" },
               { status: 400 },
             );
           }
 
-          const keyRecord = await db.query.apiKeys.findFirst({
-            where: eq(apiKeys.key, apiKey),
+          const tokenRecord = await db.query.authTokens.findFirst({
+            where: eq(authTokens.token, token),
             with: {
-              user: true,
+              organization: true,
             },
           });
 
-          if (!keyRecord) {
+          if (!tokenRecord) {
             return json(
-              { valid: false, error: "Invalid API key" },
+              { valid: false, error: "Invalid Auth Token" },
               { status: 401 },
             );
           }
 
           await db
-            .update(apiKeys)
+            .update(authTokens)
             .set({ lastUsedAt: new Date() })
-            .where(eq(apiKeys.id, keyRecord.id));
+            .where(eq(authTokens.id, tokenRecord.id));
 
           return json({
             valid: true,
-            userId: keyRecord.userId,
-            user: {
-              id: keyRecord.user.id,
-              name: keyRecord.user.name,
-              email: keyRecord.user.email,
+            organizationId: tokenRecord.organizationId,
+            organization: {
+              id: tokenRecord.organization.id,
+              name: tokenRecord.organization.name,
+              slug: tokenRecord.organization.slug,
             },
           });
         } catch (error) {
