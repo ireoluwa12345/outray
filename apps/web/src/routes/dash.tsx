@@ -13,6 +13,7 @@ import {
   HelpCircle,
   Plus,
   History,
+  Globe,
 } from "lucide-react";
 
 export const Route = createFileRoute("/dash")({
@@ -86,6 +87,11 @@ function DashboardLayout() {
               to="/dash/requests"
               icon={<History size={16} />}
               label="Requests"
+            />
+            <NavItem
+              to="/dash/subdomains"
+              icon={<Globe size={16} />}
+              label="Subdomains"
             />
 
             <div className="mt-6 mb-2 px-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
