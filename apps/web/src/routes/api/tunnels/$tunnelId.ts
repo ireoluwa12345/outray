@@ -3,7 +3,7 @@ import { json } from "@tanstack/react-start";
 import { eq, and } from "drizzle-orm";
 import { auth } from "../../../lib/auth";
 import { db } from "../../../db";
-import { tunnels, subdomains } from "../../../db/app-schema";
+import { tunnels } from "../../../db/app-schema";
 import { redis } from "../../../lib/redis";
 
 export const Route = createFileRoute("/api/tunnels/$tunnelId")({
@@ -28,14 +28,20 @@ export const Route = createFileRoute("/api/tunnels/$tunnelId")({
           return json({ error: "Tunnel not found" }, { status: 404 });
         }
 
-        // Get the subdomain for this tunnel
-        const [subdomainRecord] = await db
-          .select()
-          .from(subdomains)
-          .where(eq(subdomains.tunnelId, tunnel.id));
+        let subdomain = "";
+        try {
+          const urlObj = new URL(
+            tunnel.url.startsWith("http")
+              ? tunnel.url
+              : `https://${tunnel.url}`,
+          );
+          subdomain = urlObj.hostname.split(".")[0];
+        } catch (e) {
+          console.error("Failed to parse tunnel URL:", tunnel.url);
+        }
 
-        const isOnline = subdomainRecord
-          ? await redis.exists(`tunnel:online:${subdomainRecord.subdomain}`)
+        const isOnline = subdomain
+          ? await redis.exists(`tunnel:online:${subdomain}`)
           : false;
 
         return json({
