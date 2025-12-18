@@ -180,6 +180,30 @@ export const Route = createFileRoute("/api/stats/overview")({
             }
           }
 
+          // Get hourly request counts for the last 24 hours
+          const chartDataResult = await clickhouse.query({
+            query: `
+              WITH hours AS (
+                SELECT toStartOfHour(now64() - INTERVAL number HOUR) as hour
+                FROM numbers(24)
+              )
+              SELECT 
+                h.hour as hour,
+                countIf(t.timestamp IS NOT NULL) as requests
+              FROM hours h
+              LEFT JOIN tunnel_events t ON toStartOfHour(t.timestamp) = h.hour
+                AND t.organization_id = {organizationId:String}
+              GROUP BY h.hour
+              ORDER BY h.hour ASC
+            `,
+            query_params: { organizationId },
+            format: "JSONEachRow",
+          });
+          const chartData = (await chartDataResult.json()) as Array<{
+            hour: string;
+            requests: string;
+          }>;
+
           return json({
             totalRequests,
             requestsChange: Math.round(requestsChange),
@@ -187,6 +211,10 @@ export const Route = createFileRoute("/api/stats/overview")({
             activeTunnelsChange: 0,
             totalDataTransfer: totalBytes,
             dataTransferChange: Math.round(dataTransferChange),
+            chartData: chartData.map((d) => ({
+              hour: d.hour,
+              requests: parseInt(d.requests),
+            })),
           });
         } catch (error) {
           console.error("Error fetching stats:", error);
