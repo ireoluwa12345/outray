@@ -3,7 +3,7 @@ import { json } from "@tanstack/react-start";
 import { eq } from "drizzle-orm";
 import { randomBytes } from "crypto";
 import { db } from "../../../db";
-import { tunnels, subdomains } from "../../../db/app-schema";
+import { tunnels } from "../../../db/app-schema";
 
 function generateId(prefix: string = ""): string {
   const random = randomBytes(12).toString("hex");
@@ -19,30 +19,45 @@ export const Route = createFileRoute("/api/tunnel/register")({
             subdomain?: string;
             userId?: string;
             organizationId?: string;
+            url?: string;
           };
 
-          const { subdomain, userId, organizationId } = body;
+          const { subdomain, userId, organizationId, url } = body;
 
           if (!subdomain || !userId || !organizationId) {
             return json({ error: "Missing required fields" }, { status: 400 });
           }
 
-          // Check if subdomain already exists
-          const [existingSubdomain] = await db
-            .select()
-            .from(subdomains)
-            .where(eq(subdomains.subdomain, subdomain));
+          // Use the provided URL or construct one
+          const baseDomain = process.env.BASE_DOMAIN || "localhost.direct";
+          const protocol = baseDomain === "localhost.direct" ? "http" : "https";
+          const portSuffix =
+            baseDomain === "localhost.direct"
+              ? `:${process.env.PORT || "3547"}`
+              : "";
+          const tunnelUrl =
+            url || `${protocol}://${subdomain}.${baseDomain}${portSuffix}`;
 
-          if (existingSubdomain) {
-            // Subdomain already registered
+          // Check if tunnel with this subdomain URL already exists
+          const [existingTunnel] = await db
+            .select()
+            .from(tunnels)
+            .where(eq(tunnels.url, tunnelUrl));
+
+          if (existingTunnel) {
+            // Tunnel with this URL already exists, update lastSeenAt
+            await db
+              .update(tunnels)
+              .set({ lastSeenAt: new Date() })
+              .where(eq(tunnels.id, existingTunnel.id));
+
             return json({
               success: true,
-              tunnelId: existingSubdomain.tunnelId,
+              tunnelId: existingTunnel.id,
             });
           }
 
           // Create new tunnel record with full URL
-          const tunnelUrl = `https://${subdomain}.outray.app`;
           const tunnelRecord = {
             id: generateId("tunnel"),
             url: tunnelUrl,
@@ -55,16 +70,6 @@ export const Route = createFileRoute("/api/tunnel/register")({
           };
 
           await db.insert(tunnels).values(tunnelRecord);
-
-          // Create subdomain allocation record
-          const subdomainRecord = {
-            id: generateId("subdomain"),
-            subdomain,
-            tunnelId: tunnelRecord.id,
-            createdAt: new Date(),
-          };
-
-          await db.insert(subdomains).values(subdomainRecord);
 
           return json({ success: true, tunnelId: tunnelRecord.id });
         } catch (error) {
