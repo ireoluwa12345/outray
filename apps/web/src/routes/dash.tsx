@@ -26,16 +26,16 @@ function DashboardLayout() {
   const title = path === "dash" ? "overview" : path;
 
   return (
-    <div className="min-h-screen bg-black text-gray-300 font-sans selection:bg-blue-500/30">
+    <div className="min-h-screen bg-[#070707] text-gray-300 font-sans selection:bg-accent/30">
       <div className="flex h-screen overflow-hidden">
 
-        <aside className="w-64 border-r border-white/5 bg-black flex flex-col">
+        <div className="w-64 flex flex-col">
           <div className="p-4 flex items-center justify-between">
             <div className="flex items-center gap-3 px-2">
               <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
                 <div className="w-4 h-4 bg-black rounded-full" />
               </div>
-              <span className="font-semibold text-white">OutRay</span>
+              <p className="font-semibold text-white">OutRay</p>
             </div>
             <button className="p-1.5 text-gray-400 hover:text-white hover:bg-white/5 rounded-md transition-colors">
               <div className="w-4 h-4 border border-current rounded-sm" />
@@ -45,7 +45,7 @@ function DashboardLayout() {
           <div className="px-4 py-2">
             <button className="w-full flex items-center justify-between px-3 py-2 bg-white/5 hover:bg-white/10 border border-white/5 rounded-lg text-sm text-gray-300 transition-colors group">
               <span className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded-full bg-blue-500/20 border border-blue-500/50" />
+                <div className="w-4 h-4 rounded-full bg-accent/20 border border-accent/50" />
                 Personal
               </span>
               <span className="text-gray-500 group-hover:text-gray-400">
@@ -110,7 +110,7 @@ function DashboardLayout() {
               Help & Support
             </button>
             <div className="flex items-center gap-3 px-3 py-2 mt-2">
-              <div className="w-8 h-8 rounded-full bg-linear-to-tr from-blue-500 to-purple-500" />
+              <div className="w-8 h-8 rounded-full bg-linear-to-tr from-accent to-purple-500" />
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-medium text-white truncate">
                   akinloluwami
@@ -124,39 +124,18 @@ function DashboardLayout() {
               </button>
             </div>
           </div>
-        </aside>
+        </div>
 
 
-        <main className="flex-1 flex flex-col min-w-0 bg-black">
-          <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-black">
-            <div className="flex items-center gap-4">
-              <h1 className="text-xl font-semibold text-white capitalize">
-                {title}
-              </h1>
-            </div>
-            <div className="flex items-center gap-3">
-              <button className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 rounded-md transition-colors">
-                Feedback
-              </button>
-              <button className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 rounded-md transition-colors">
-                Docs
-              </button>
-              <div className="h-4 w-px bg-white/10 mx-1" />
-              <button className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-full transition-colors relative">
-                <Bell size={18} />
-                <span className="absolute top-2 right-2 w-2 h-2 bg-blue-500 rounded-full border-2 border-[#0F1115]" />
-              </button>
-              <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition-colors shadow-lg shadow-blue-900/20">
-                <Plus size={16} />
-                Create Tunnel
-              </button>
-            </div>
-          </header>
+        <div className="flex-1 flex flex-col min-w-0 bg-[#101010] border border-white/5 m-2 rounded-2xl">
+          {/* <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-black">
+           
+          </header> */}
 
           <div className="flex-1 overflow-y-auto p-6">
             <Outlet />
           </div>
-        </main>
+        </div>
       </div>
     </div>
   );
