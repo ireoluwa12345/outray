@@ -2,14 +2,12 @@ import {
   createFileRoute,
   Outlet,
   Link,
-  useLocation,
 } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   LayoutDashboard,
   Network,
   Settings,
-  Search,
   HelpCircle,
   History,
   Globe,
@@ -17,16 +15,53 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   LogOut,
+  Check,
+  Plus,
 } from "lucide-react";
+import { useAppStore } from "../lib/store";
+import { authClient } from "../lib/auth-client";
 
 export const Route = createFileRoute("/dash")({
   component: DashboardLayout,
 });
 
 function DashboardLayout() {
-  const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const path = location.pathname.split("/").pop() || "overview";
+  
+  const { selectedOrganizationId, setSelectedOrganizationId } = useAppStore();
+  const [organizations, setOrganizations] = useState<any[]>([]);
+  const [isOrgDropdownOpen, setIsOrgDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchOrgs = async () => {
+      const { data } = await authClient.organization.list();
+      if (data) {
+        setOrganizations(data);
+        if (!selectedOrganizationId && data.length > 0) {
+            const session = await authClient.getSession();
+            const activeOrgId = session.data?.session.activeOrganizationId;
+            setSelectedOrganizationId(activeOrgId || data[0].id);
+        }
+      }
+    };
+    fetchOrgs();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOrgDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const selectedOrg = organizations.find(org => org.id === selectedOrganizationId) || organizations[0];
 
   return (
     <div className="min-h-screen bg-[#070707] text-gray-300 font-sans selection:bg-accent/30">
@@ -50,46 +85,60 @@ function DashboardLayout() {
             </button>
           </div>
 
-          <div className="px-4 py-2">
-            <button className={`w-full flex items-center ${isCollapsed ? "justify-center" : "justify-between"} px-3 py-2.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl text-sm text-gray-300 transition-all group hover:border-white/10 hover:shadow-lg hover:shadow-black/20`}>
+          <div className="px-4 py-2 relative" ref={dropdownRef}>
+            <button 
+              onClick={() => !isCollapsed && setIsOrgDropdownOpen(!isOrgDropdownOpen)}
+              className={`w-full flex items-center ${isCollapsed ? "justify-center" : "justify-between"} px-3 py-2.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl text-sm text-gray-300 transition-all group hover:border-white/10 hover:shadow-lg hover:shadow-black/20 ${isOrgDropdownOpen ? "bg-white/10 border-white/10" : ""}`}
+            >
               <span className="flex items-center gap-3">
                 <div className="w-6 h-6 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0">
                   <div className="w-2 h-2 rounded-full bg-accent shadow-[0_0_8px_rgba(255,166,43,0.5)]" />
                 </div>
-                {!isCollapsed && <span className="font-medium">Personal</span>}
+                {!isCollapsed && <span className="font-medium truncate max-w-30">{selectedOrg?.name || "Select Org"}</span>}
               </span>
               {!isCollapsed && (
-                <span className="text-gray-500 group-hover:text-gray-400">
-                  <ChevronRight size={14} className="rotate-90" />
+                <span className={`text-gray-500 group-hover:text-gray-400 transition-transform duration-200 ${isOrgDropdownOpen ? "-rotate-90" : "rotate-90"}`}>
+                  <ChevronRight size={14} />
                 </span>
               )}
             </button>
+
+            {isOrgDropdownOpen && !isCollapsed && (
+              <div className="absolute top-full left-4 right-4 mt-2 bg-[#101010] border border-white/10 rounded-xl shadow-xl shadow-black/50 overflow-hidden z-50 backdrop-blur-xl">
+                <div className="p-1 max-h-60 overflow-y-auto">
+                  {organizations.map((org) => (
+                    <button
+                      key={org.id}
+                      onClick={() => {
+                        setSelectedOrganizationId(org.id);
+                        setIsOrgDropdownOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors ${
+                        selectedOrganizationId === org.id
+                          ? "bg-accent/10 text-accent"
+                          : "text-gray-400 hover:text-white hover:bg-white/5"
+                      }`}
+                    >
+                      <span className="truncate">{org.name}</span>
+                      {selectedOrganizationId === org.id && <Check size={14} />}
+                    </button>
+                  ))}
+                </div>
+                <div className="p-1 border-t border-white/5">
+                  <Link
+                    to="/onboarding"
+                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                    onClick={() => setIsOrgDropdownOpen(false)}
+                  >
+                    <Plus size={14} />
+                    Create Organization
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
 
           <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto scrollbar-hide">
-            <div className="px-2 py-2 mb-4">
-              {isCollapsed ? (
-                <button className="w-full flex justify-center p-2.5 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors">
-                  <Search size={20} />
-                </button>
-              ) : (
-                <div className="relative group">
-                  <Search
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-accent transition-colors"
-                    size={16}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    className="w-full bg-white/5 border border-white/5 rounded-xl text-sm text-gray-300 placeholder-gray-600 pl-10 pr-10 py-2.5 focus:outline-none focus:border-accent/50 focus:bg-white/10 transition-all shadow-sm"
-                  />
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 pointer-events-none">
-                    <span className="text-[10px] font-mono text-gray-600 bg-white/5 px-1.5 py-0.5 rounded border border-white/5">⌘K</span>
-                  </div>
-                </div>
-              )}
-            </div>
-
             {!isCollapsed && (
               <div className="px-4 mt-2 mb-2 text-[10px] font-bold text-gray-600 uppercase tracking-wider">
                 Platform
