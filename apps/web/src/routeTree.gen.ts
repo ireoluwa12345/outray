@@ -28,6 +28,7 @@ import { Route as ApiTunnelRegisterRouteImport } from './routes/api/tunnel/regis
 import { Route as ApiTunnelCheckSubdomainRouteImport } from './routes/api/tunnel/check-subdomain'
 import { Route as ApiTunnelAuthRouteImport } from './routes/api/tunnel/auth'
 import { Route as ApiSubdomainsSubdomainIdRouteImport } from './routes/api/subdomains/$subdomainId'
+import { Route as ApiStatsTunnelRouteImport } from './routes/api/stats/tunnel'
 import { Route as ApiStatsOverviewRouteImport } from './routes/api/stats/overview'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
@@ -127,6 +128,11 @@ const ApiSubdomainsSubdomainIdRoute =
     path: '/$subdomainId',
     getParentRoute: () => ApiSubdomainsRoute,
   } as any)
+const ApiStatsTunnelRoute = ApiStatsTunnelRouteImport.update({
+  id: '/api/stats/tunnel',
+  path: '/api/stats/tunnel',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiStatsOverviewRoute = ApiStatsOverviewRouteImport.update({
   id: '/api/stats/overview',
   path: '/api/stats/overview',
@@ -152,6 +158,7 @@ export interface FileRoutesByFullPath {
   '/dash/': typeof DashIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/stats/overview': typeof ApiStatsOverviewRoute
+  '/api/stats/tunnel': typeof ApiStatsTunnelRoute
   '/api/subdomains/$subdomainId': typeof ApiSubdomainsSubdomainIdRoute
   '/api/tunnel/auth': typeof ApiTunnelAuthRoute
   '/api/tunnel/check-subdomain': typeof ApiTunnelCheckSubdomainRoute
@@ -174,6 +181,7 @@ export interface FileRoutesByTo {
   '/dash': typeof DashIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/stats/overview': typeof ApiStatsOverviewRoute
+  '/api/stats/tunnel': typeof ApiStatsTunnelRoute
   '/api/subdomains/$subdomainId': typeof ApiSubdomainsSubdomainIdRoute
   '/api/tunnel/auth': typeof ApiTunnelAuthRoute
   '/api/tunnel/check-subdomain': typeof ApiTunnelCheckSubdomainRoute
@@ -198,6 +206,7 @@ export interface FileRoutesById {
   '/dash/': typeof DashIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/stats/overview': typeof ApiStatsOverviewRoute
+  '/api/stats/tunnel': typeof ApiStatsTunnelRoute
   '/api/subdomains/$subdomainId': typeof ApiSubdomainsSubdomainIdRoute
   '/api/tunnel/auth': typeof ApiTunnelAuthRoute
   '/api/tunnel/check-subdomain': typeof ApiTunnelCheckSubdomainRoute
@@ -223,6 +232,7 @@ export interface FileRouteTypes {
     | '/dash/'
     | '/api/auth/$'
     | '/api/stats/overview'
+    | '/api/stats/tunnel'
     | '/api/subdomains/$subdomainId'
     | '/api/tunnel/auth'
     | '/api/tunnel/check-subdomain'
@@ -245,6 +255,7 @@ export interface FileRouteTypes {
     | '/dash'
     | '/api/auth/$'
     | '/api/stats/overview'
+    | '/api/stats/tunnel'
     | '/api/subdomains/$subdomainId'
     | '/api/tunnel/auth'
     | '/api/tunnel/check-subdomain'
@@ -268,6 +279,7 @@ export interface FileRouteTypes {
     | '/dash/'
     | '/api/auth/$'
     | '/api/stats/overview'
+    | '/api/stats/tunnel'
     | '/api/subdomains/$subdomainId'
     | '/api/tunnel/auth'
     | '/api/tunnel/check-subdomain'
@@ -287,6 +299,7 @@ export interface RootRouteChildren {
   ApiSubdomainsRoute: typeof ApiSubdomainsRouteWithChildren
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiStatsOverviewRoute: typeof ApiStatsOverviewRoute
+  ApiStatsTunnelRoute: typeof ApiStatsTunnelRoute
   ApiTunnelAuthRoute: typeof ApiTunnelAuthRoute
   ApiTunnelCheckSubdomainRoute: typeof ApiTunnelCheckSubdomainRoute
   ApiTunnelRegisterRoute: typeof ApiTunnelRegisterRoute
@@ -429,6 +442,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSubdomainsSubdomainIdRouteImport
       parentRoute: typeof ApiSubdomainsRoute
     }
+    '/api/stats/tunnel': {
+      id: '/api/stats/tunnel'
+      path: '/api/stats/tunnel'
+      fullPath: '/api/stats/tunnel'
+      preLoaderRoute: typeof ApiStatsTunnelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/stats/overview': {
       id: '/api/stats/overview'
       path: '/api/stats/overview'
@@ -489,6 +509,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiSubdomainsRoute: ApiSubdomainsRouteWithChildren,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiStatsOverviewRoute: ApiStatsOverviewRoute,
+  ApiStatsTunnelRoute: ApiStatsTunnelRoute,
   ApiTunnelAuthRoute: ApiTunnelAuthRoute,
   ApiTunnelCheckSubdomainRoute: ApiTunnelCheckSubdomainRoute,
   ApiTunnelRegisterRoute: ApiTunnelRegisterRoute,
