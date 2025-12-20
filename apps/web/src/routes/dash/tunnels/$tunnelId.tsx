@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { appClient } from "../../../lib/app-client";
 import {
   ArrowLeft,
   Globe,
@@ -15,7 +17,6 @@ import {
   Search,
   Filter,
   Download,
-  ChevronDown,
   Lock,
   UserCheck,
   Key,
@@ -36,32 +37,71 @@ export const Route = createFileRoute("/dash/tunnels/$tunnelId")({
   component: TunnelDetailView,
 });
 
-const MOCK_CHART_DATA = Array.from({ length: 24 }, (_, i) => ({
-  time: `${i}:00`,
-  requests: Math.floor(Math.random() * 1000) + 500,
-  latency: Math.floor(Math.random() * 50) + 20,
-}));
-
-const MOCK_REQUESTS = Array.from({ length: 10 }, (_, i) => ({
-  id: `req_${Math.random().toString(36).substr(2, 9)}`,
-  method: ["GET", "POST", "PUT", "DELETE"][Math.floor(Math.random() * 4)],
-  path: ["/api/users", "/auth/login", "/dashboard", "/settings"][
-    Math.floor(Math.random() * 4)
-  ],
-  status: [200, 201, 400, 401, 500][Math.floor(Math.random() * 5)],
-  duration: Math.floor(Math.random() * 200) + 20,
-  time: new Date(Date.now() - i * 60000).toLocaleTimeString(),
-  size: Math.floor(Math.random() * 5000) + 100,
-}));
+function formatBytes(bytes: number): string {
+  if (bytes >= 1_073_741_824) {
+    return `${(bytes / 1_073_741_824).toFixed(1)} GB`;
+  } else if (bytes >= 1_048_576) {
+    return `${(bytes / 1_048_576).toFixed(1)} MB`;
+  } else if (bytes >= 1_024) {
+    return `${(bytes / 1_024).toFixed(1)} KB`;
+  }
+  return `${bytes} B`;
+}
 
 function TunnelDetailView() {
   const { tunnelId } = Route.useParams();
   const [activeTab, setActiveTab] = useState<"overview" | "requests" | "security" | "settings">("overview");
   const [timeRange, setTimeRange] = useState("24h");
 
+  const { data: tunnelData, isLoading: tunnelLoading } = useQuery({
+    queryKey: ["tunnel", tunnelId],
+    queryFn: () => appClient.tunnels.get(tunnelId),
+  });
+
+  const { data: statsData, isLoading: statsLoading } = useQuery({
+    queryKey: ["tunnelStats", tunnelId, timeRange],
+    queryFn: async () => {
+      const result = await appClient.stats.tunnel(tunnelId, timeRange);
+      if ("error" in result) throw new Error(result.error);
+      return result;
+    },
+    refetchInterval: 5000,
+  });
+
+  const tunnel = tunnelData && "tunnel" in tunnelData ? tunnelData.tunnel : null;
+  const stats = statsData && "stats" in statsData ? statsData.stats : null;
+  const chartData = statsData && "chartData" in statsData ? statsData.chartData : [];
+  const requests = statsData && "requests" in statsData ? statsData.requests : [];
+
+  if (tunnelLoading || statsLoading) {
+    return (
+      <div className="space-y-6 max-w-7xl mx-auto animate-pulse">
+        <div className="h-20 bg-white/5 rounded-xl" />
+        <div className="grid grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="h-32 bg-white/5 rounded-2xl" />
+          ))}
+        </div>
+        <div className="h-96 bg-white/5 rounded-2xl" />
+      </div>
+    );
+  }
+
+  if (!tunnel) {
+    return (
+      <div className="flex flex-col items-center justify-center h-96 text-gray-500">
+        <AlertTriangle size={48} className="mb-4 opacity-50" />
+        <h2 className="text-xl font-medium text-white mb-2">Tunnel Not Found</h2>
+        <p>The tunnel you are looking for does not exist or you don't have access to it.</p>
+        <Link to="/dash/tunnels" className="mt-4 text-accent hover:underline">
+          Back to Tunnels
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
-      {/* Header */}
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-4">
           <Link
@@ -72,20 +112,27 @@ function TunnelDetailView() {
           </Link>
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-1">
-              <h2 className="text-2xl font-bold text-white tracking-tight">{tunnelId}</h2>
-              <span className="px-2.5 py-0.5 rounded-full bg-green-500/10 text-green-500 text-xs font-medium border border-green-500/20 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                Online
+              <h2 className="text-2xl font-bold text-white tracking-tight">{tunnel.name || tunnel.id}</h2>
+              <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border flex items-center gap-1.5 ${
+                tunnel.isOnline 
+                  ? "bg-green-500/10 text-green-500 border-green-500/20" 
+                  : "bg-red-500/10 text-red-500 border-red-500/20"
+              }`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${tunnel.isOnline ? "bg-green-500 animate-pulse" : "bg-red-500"}`} />
+                {tunnel.isOnline ? "Online" : "Offline"}
               </span>
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <Globe size={14} />
-              <span className="font-mono">https://{tunnelId}.outray.app</span>
-              <button className="hover:text-white transition-colors">
+              <span className="font-mono">{tunnel.url}</span>
+              <button 
+                className="hover:text-white transition-colors"
+                onClick={() => navigator.clipboard.writeText(tunnel.url)}
+              >
                 <Copy size={12} />
               </button>
               <a
-                href={`https://${tunnelId}.outray.app`}
+                href={tunnel.url}
                 target="_blank"
                 rel="noreferrer"
                 className="hover:text-white transition-colors"
@@ -106,7 +153,6 @@ function TunnelDetailView() {
           </div>
         </div>
 
-        {/* Tabs */}
         <div className="flex items-center gap-1 border-b border-white/5">
           {[
             { id: "overview", label: "Overview", icon: Activity },
@@ -132,31 +178,30 @@ function TunnelDetailView() {
 
       {activeTab === "overview" && (
         <div className="space-y-6">
-          {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { label: "Total Requests", value: "1.2M", change: "+12%", trend: "up" },
-              { label: "Avg. Latency", value: "45ms", change: "-5%", trend: "down" },
-              { label: "Bandwidth", value: "2.4 GB", change: "+8%", trend: "up" },
-              { label: "Error Rate", value: "0.01%", change: "0%", trend: "neutral" },
+              { label: "Total Requests", value: stats?.totalRequests.toLocaleString() || "0", change: null, trend: "neutral" },
+              { label: "Avg. Duration", value: `${Math.round(stats?.avgDuration || 0)}ms`, change: null, trend: "neutral" },
+              { label: "Bandwidth", value: formatBytes(stats?.totalBandwidth || 0), change: null, trend: "neutral" },
+              { label: "Error Rate", value: `${(stats?.errorRate || 0).toFixed(2)}%`, change: null, trend: stats?.errorRate && stats.errorRate > 0 ? "down" : "neutral" },
             ].map((stat, i) => (
               <div key={i} className="bg-white/2 border border-white/5 rounded-2xl p-5 hover:border-white/10 transition-all group">
                 <div className="text-sm text-gray-500 font-medium mb-2">{stat.label}</div>
                 <div className="flex items-end justify-between">
                   <div className="text-2xl font-semibold text-white">{stat.value}</div>
-                  <div className={`text-xs font-medium px-2 py-1 rounded-lg ${
-                    stat.trend === "up" ? "bg-green-500/10 text-green-500" : 
-                    stat.trend === "down" ? "bg-green-500/10 text-green-500" : 
-                    "bg-gray-500/10 text-gray-400"
-                  }`}>
-                    {stat.change}
-                  </div>
+                  {stat.change && (
+                    <div className={`text-xs font-medium px-2 py-1 rounded-lg ${
+                      stat.trend === "up" ? "bg-green-500/10 text-green-500" : 
+                      stat.trend === "down" ? "bg-red-500/10 text-red-500" : 
+                      "bg-gray-500/10 text-gray-400"
+                    }`}>
+                      {stat.change}
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
           </div>
-
-          {/* Main Chart */}
           <div className="bg-white/2 border border-white/5 rounded-2xl p-6">
             <div className="flex items-center justify-between mb-6">
               <div>
@@ -180,52 +225,66 @@ function TunnelDetailView() {
               </div>
             </div>
             <div className="h-75 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={MOCK_CHART_DATA}>
-                  <defs>
-                    <linearGradient id="colorRequests" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#FFA62B" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#FFA62B" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                  <XAxis 
-                    dataKey="time" 
-                    stroke="#666" 
-                    fontSize={12} 
-                    tickLine={false} 
-                    axisLine={false}
-                  />
-                  <YAxis 
-                    stroke="#666" 
-                    fontSize={12} 
-                    tickLine={false} 
-                    axisLine={false}
-                    tickFormatter={(value) => `${value}`}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "#0A0A0A",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      borderRadius: "12px",
-                      boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-                    }}
-                    itemStyle={{ color: "#fff" }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="requests"
-                    stroke="#FFA62B"
-                    strokeWidth={2}
-                    fillOpacity={1}
-                    fill="url(#colorRequests)"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+              {chartData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={chartData.map(d => ({
+                    ...d,
+                    time: new Date(d.time).toLocaleTimeString("en-US", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: false,
+                    })
+                  }))}>
+                    <defs>
+                      <linearGradient id="colorRequests" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#FFA62B" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#FFA62B" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                    <XAxis 
+                      dataKey="time" 
+                      stroke="#666" 
+                      fontSize={12} 
+                      tickLine={false} 
+                      axisLine={false}
+                      interval="preserveStartEnd"
+                    />
+                    <YAxis 
+                      stroke="#666" 
+                      fontSize={12} 
+                      tickLine={false} 
+                      axisLine={false}
+                      tickFormatter={(value) => `${value}`}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "#0A0A0A",
+                        border: "1px solid rgba(255,255,255,0.1)",
+                        borderRadius: "12px",
+                        boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                      }}
+                      itemStyle={{ color: "#fff" }}
+                      labelStyle={{ color: "#9ca3af", marginBottom: "0.25rem" }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="requests"
+                      stroke="#FFA62B"
+                      strokeWidth={2}
+                      fillOpacity={1}
+                      fill="url(#colorRequests)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full flex flex-col items-center justify-center text-gray-500 bg-white/5 rounded-xl border border-white/5 border-dashed">
+                  <Activity size={32} className="mb-2 opacity-50" />
+                  <p>No traffic data available yet</p>
+                </div>
+              )}
             </div>
           </div>
-
-          {/* Info Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 bg-white/2 border border-white/5 rounded-2xl p-6">
               <h3 className="text-lg font-medium text-white mb-4">Tunnel Configuration</h3>
@@ -246,8 +305,8 @@ function TunnelDetailView() {
                   <div className="text-white font-mono">v1.2.4</div>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-500 uppercase tracking-wider font-medium mb-1">Uptime</div>
-                  <div className="text-white font-mono">4d 12h 30m</div>
+                  <div className="text-xs text-gray-500 uppercase tracking-wider font-medium mb-1">Created At</div>
+                  <div className="text-white font-mono">{new Date(tunnel.createdAt).toLocaleDateString()}</div>
                 </div>
               </div>
             </div>
@@ -314,30 +373,38 @@ function TunnelDetailView() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {MOCK_REQUESTS.map((req) => (
-                  <tr key={req.id} className="hover:bg-white/5 transition-colors group">
-                    <td className="px-6 py-4">
-                      <span className={`px-2 py-1 rounded-md text-xs font-medium ${
-                        req.status >= 500 ? "bg-red-500/10 text-red-500" :
-                        req.status >= 400 ? "bg-orange-500/10 text-orange-500" :
-                        req.status >= 300 ? "bg-blue-500/10 text-blue-500" :
-                        "bg-green-500/10 text-green-500"
-                      }`}>
-                        {req.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 font-mono text-white">{req.method}</td>
-                    <td className="px-6 py-4 text-gray-300 truncate max-w-50">{req.path}</td>
-                    <td className="px-6 py-4 text-gray-500">{req.time}</td>
-                    <td className="px-6 py-4 text-gray-300">{req.duration}ms</td>
-                    <td className="px-6 py-4 text-gray-500">{req.size}B</td>
-                    <td className="px-6 py-4 text-right">
-                      <button className="p-1 text-gray-500 hover:text-white opacity-0 group-hover:opacity-100 transition-all">
-                        <MoreVertical size={16} />
-                      </button>
+                {requests.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                      No requests found
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  requests.map((req) => (
+                    <tr key={req.id} className="hover:bg-white/5 transition-colors group">
+                      <td className="px-6 py-4">
+                        <span className={`px-2 py-1 rounded-md text-xs font-medium ${
+                          req.status >= 500 ? "bg-red-500/10 text-red-500" :
+                          req.status >= 400 ? "bg-orange-500/10 text-orange-500" :
+                          req.status >= 300 ? "bg-blue-500/10 text-blue-500" :
+                          "bg-green-500/10 text-green-500"
+                        }`}>
+                          {req.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 font-mono text-white">{req.method}</td>
+                      <td className="px-6 py-4 text-gray-300 truncate max-w-50" title={req.path}>{req.path}</td>
+                      <td className="px-6 py-4 text-gray-500">{new Date(req.time).toLocaleTimeString()}</td>
+                      <td className="px-6 py-4 text-gray-300">{req.duration}ms</td>
+                      <td className="px-6 py-4 text-gray-500">{formatBytes(req.size)}</td>
+                      <td className="px-6 py-4 text-right">
+                        <button className="p-1 text-gray-500 hover:text-white opacity-0 group-hover:opacity-100 transition-all">
+                          <MoreVertical size={16} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
