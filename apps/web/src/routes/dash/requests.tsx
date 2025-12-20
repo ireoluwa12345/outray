@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Search, Filter, Download } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
-import { authClient } from "../../lib/auth-client";
+import { useAppStore } from "../../lib/store";
 
 export const Route = createFileRoute("/dash/requests")({
   component: RequestsView,
@@ -25,8 +25,8 @@ interface TunnelEvent {
 function RequestsView() {
   const [searchTerm, setSearchTerm] = useState("");
   const [requests, setRequests] = useState<TunnelEvent[]>([]);
-  const { data: session } = authClient.useSession();
-  const activeOrgId = session?.session.activeOrganizationId;
+  const { selectedOrganizationId } = useAppStore();
+  const activeOrgId = selectedOrganizationId;
   const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
