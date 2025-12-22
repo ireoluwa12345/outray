@@ -1,7 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Globe, Plus, Trash2, X, CheckCircle, AlertCircle } from "lucide-react";
+import {
+  Globe,
+  Plus,
+  Trash2,
+  X,
+  CheckCircle,
+  AlertCircle,
+  Copy,
+  Info,
+} from "lucide-react";
 import { appClient } from "../../lib/app-client";
 import { useAppStore } from "../../lib/store";
 
@@ -57,10 +66,29 @@ function DomainsView() {
     },
   });
 
+  const verifyMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return appClient.domains.verify(id);
+    },
+    onSuccess: (data) => {
+      if ("error" in data) {
+        alert(data.error);
+      } else {
+        queryClient.invalidateQueries({ queryKey: ["domains"] });
+      }
+    },
+  });
+
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     createMutation.mutate(newDomain);
+  };
+
+  const getRecordName = (domain: string) => {
+    const parts = domain.split(".");
+    if (parts.length <= 2) return "@";
+    return parts.slice(0, parts.length - 2).join(".");
   };
 
   const domains = data && "domains" in data ? data.domains : [];
@@ -216,6 +244,125 @@ function DomainsView() {
                 <p className="text-sm text-white/40 mt-1">
                   Added on {new Date(domain.createdAt).toLocaleDateString()}
                 </p>
+                {domain.status !== "active" && (
+                  <div className="mt-4 bg-black/20 rounded-xl border border-white/5 overflow-hidden">
+                    <div className="p-4 border-b border-white/5 flex items-start gap-3">
+                      <div className="p-2 bg-blue-500/10 rounded-lg shrink-0">
+                        <Info className="w-4 h-4 text-blue-400" />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-medium text-white mb-1">
+                          DNS Configuration
+                        </h4>
+                        <p className="text-xs text-white/60 leading-relaxed">
+                          Add these records to your domain provider to verify
+                          ownership and route traffic. It may take a few minutes
+                          for changes to propagate.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="p-4 space-y-3">
+                      {/* CNAME Record */}
+                      <div className="bg-white/5 rounded-lg border border-white/5 overflow-hidden">
+                        <div className="grid grid-cols-[60px_1fr_1fr_32px] gap-4 p-2.5 border-b border-white/5 text-[10px] font-medium text-white/40 uppercase tracking-wider">
+                          <div>Type</div>
+                          <div>Name</div>
+                          <div>Value</div>
+                          <div></div>
+                        </div>
+                        <div className="grid grid-cols-[60px_1fr_1fr_32px] gap-4 p-3 items-center">
+                          <div>
+                            <span className="inline-flex items-center px-2 py-1 rounded-md bg-blue-500/10 text-blue-400 text-xs font-medium ring-1 ring-inset ring-blue-500/20">
+                              CNAME
+                            </span>
+                          </div>
+                          <div
+                            className="font-mono text-white/80 text-xs truncate"
+                            title={getRecordName(domain.domain)}
+                          >
+                            {getRecordName(domain.domain)}
+                          </div>
+                          <div
+                            className="font-mono text-white/60 text-xs truncate"
+                            title="edge.outray.app"
+                          >
+                            edge.outray.app
+                          </div>
+                          <div className="flex justify-end">
+                            <button
+                              onClick={() =>
+                                navigator.clipboard.writeText("edge.outray.app")
+                              }
+                              className="p-1.5 hover:bg-white/10 rounded-md text-white/40 hover:text-white transition-colors"
+                              title="Copy value"
+                            >
+                              <Copy className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* TXT Record */}
+                      <div className="bg-white/5 rounded-lg border border-white/5 overflow-hidden">
+                        <div className="grid grid-cols-[60px_1fr_1fr_32px] gap-4 p-2.5 border-b border-white/5 text-[10px] font-medium text-white/40 uppercase tracking-wider">
+                          <div>Type</div>
+                          <div>Name</div>
+                          <div>Value</div>
+                          <div></div>
+                        </div>
+                        <div className="grid grid-cols-[60px_1fr_1fr_32px] gap-4 p-3 items-center">
+                          <div>
+                            <span className="inline-flex items-center px-2 py-1 rounded-md bg-purple-500/10 text-purple-400 text-xs font-medium ring-1 ring-inset ring-purple-500/20">
+                              TXT
+                            </span>
+                          </div>
+                          <div
+                            className="font-mono text-white/80 text-xs truncate"
+                            title={
+                              getRecordName(domain.domain) === "@"
+                                ? "_outray-challenge"
+                                : `_outray-challenge.${getRecordName(domain.domain)}`
+                            }
+                          >
+                            {getRecordName(domain.domain) === "@"
+                              ? "_outray-challenge"
+                              : `_outray-challenge.${getRecordName(domain.domain)}`}
+                          </div>
+                          <div
+                            className="font-mono text-white/60 text-xs truncate"
+                            title={domain.id}
+                          >
+                            {domain.id}
+                          </div>
+                          <div className="flex justify-end">
+                            <button
+                              onClick={() =>
+                                navigator.clipboard.writeText(domain.id)
+                              }
+                              className="p-1.5 hover:bg-white/10 rounded-md text-white/40 hover:text-white transition-colors"
+                              title="Copy value"
+                            >
+                              <Copy className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="px-4 pb-4">
+                      <button
+                        onClick={() => verifyMutation.mutate(domain.id)}
+                        disabled={verifyMutation.isPending}
+                        className="w-full py-2.5 bg-white text-black rounded-lg hover:bg-white/90 transition-colors font-medium disabled:opacity-50 text-sm"
+                      >
+                        {verifyMutation.isPending
+                          ? "Verifying Configuration..."
+                          : "Verify DNS Records"}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
