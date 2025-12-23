@@ -1,6 +1,7 @@
 export interface OpenTunnelMessage {
   type: "open_tunnel";
   subdomain?: string | null;
+  customDomain?: string | null;
   apiKey?: string;
   forceTakeover?: boolean;
 }
