@@ -36,6 +36,7 @@ import { Route as ApiTunnelsTunnelIdRouteImport } from './routes/api/tunnels/$tu
 import { Route as ApiTunnelRegisterRouteImport } from './routes/api/tunnel/register'
 import { Route as ApiTunnelCheckSubdomainRouteImport } from './routes/api/tunnel/check-subdomain'
 import { Route as ApiTunnelAuthRouteImport } from './routes/api/tunnel/auth'
+import { Route as ApiSubscriptionsOrganizationIdRouteImport } from './routes/api/subscriptions/$organizationId'
 import { Route as ApiSubdomainsSubdomainIdRouteImport } from './routes/api/subdomains/$subdomainId'
 import { Route as ApiStatsTunnelRouteImport } from './routes/api/stats/tunnel'
 import { Route as ApiStatsOverviewRouteImport } from './routes/api/stats/overview'
@@ -184,6 +185,12 @@ const ApiTunnelAuthRoute = ApiTunnelAuthRouteImport.update({
   path: '/api/tunnel/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSubscriptionsOrganizationIdRoute =
+  ApiSubscriptionsOrganizationIdRouteImport.update({
+    id: '/api/subscriptions/$organizationId',
+    path: '/api/subscriptions/$organizationId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiSubdomainsSubdomainIdRoute =
   ApiSubdomainsSubdomainIdRouteImport.update({
     id: '/$subdomainId',
@@ -278,6 +285,7 @@ export interface FileRoutesByFullPath {
   '/api/stats/overview': typeof ApiStatsOverviewRoute
   '/api/stats/tunnel': typeof ApiStatsTunnelRoute
   '/api/subdomains/$subdomainId': typeof ApiSubdomainsSubdomainIdRoute
+  '/api/subscriptions/$organizationId': typeof ApiSubscriptionsOrganizationIdRoute
   '/api/tunnel/auth': typeof ApiTunnelAuthRoute
   '/api/tunnel/check-subdomain': typeof ApiTunnelCheckSubdomainRoute
   '/api/tunnel/register': typeof ApiTunnelRegisterRoute
@@ -318,6 +326,7 @@ export interface FileRoutesByTo {
   '/api/stats/overview': typeof ApiStatsOverviewRoute
   '/api/stats/tunnel': typeof ApiStatsTunnelRoute
   '/api/subdomains/$subdomainId': typeof ApiSubdomainsSubdomainIdRoute
+  '/api/subscriptions/$organizationId': typeof ApiSubscriptionsOrganizationIdRoute
   '/api/tunnel/auth': typeof ApiTunnelAuthRoute
   '/api/tunnel/check-subdomain': typeof ApiTunnelCheckSubdomainRoute
   '/api/tunnel/register': typeof ApiTunnelRegisterRoute
@@ -360,6 +369,7 @@ export interface FileRoutesById {
   '/api/stats/overview': typeof ApiStatsOverviewRoute
   '/api/stats/tunnel': typeof ApiStatsTunnelRoute
   '/api/subdomains/$subdomainId': typeof ApiSubdomainsSubdomainIdRoute
+  '/api/subscriptions/$organizationId': typeof ApiSubscriptionsOrganizationIdRoute
   '/api/tunnel/auth': typeof ApiTunnelAuthRoute
   '/api/tunnel/check-subdomain': typeof ApiTunnelCheckSubdomainRoute
   '/api/tunnel/register': typeof ApiTunnelRegisterRoute
@@ -403,6 +413,7 @@ export interface FileRouteTypes {
     | '/api/stats/overview'
     | '/api/stats/tunnel'
     | '/api/subdomains/$subdomainId'
+    | '/api/subscriptions/$organizationId'
     | '/api/tunnel/auth'
     | '/api/tunnel/check-subdomain'
     | '/api/tunnel/register'
@@ -443,6 +454,7 @@ export interface FileRouteTypes {
     | '/api/stats/overview'
     | '/api/stats/tunnel'
     | '/api/subdomains/$subdomainId'
+    | '/api/subscriptions/$organizationId'
     | '/api/tunnel/auth'
     | '/api/tunnel/check-subdomain'
     | '/api/tunnel/register'
@@ -484,6 +496,7 @@ export interface FileRouteTypes {
     | '/api/stats/overview'
     | '/api/stats/tunnel'
     | '/api/subdomains/$subdomainId'
+    | '/api/subscriptions/$organizationId'
     | '/api/tunnel/auth'
     | '/api/tunnel/check-subdomain'
     | '/api/tunnel/register'
@@ -516,6 +529,7 @@ export interface RootRouteChildren {
   ApiMeOrgsRoute: typeof ApiMeOrgsRoute
   ApiStatsOverviewRoute: typeof ApiStatsOverviewRoute
   ApiStatsTunnelRoute: typeof ApiStatsTunnelRoute
+  ApiSubscriptionsOrganizationIdRoute: typeof ApiSubscriptionsOrganizationIdRoute
   ApiTunnelAuthRoute: typeof ApiTunnelAuthRoute
   ApiTunnelCheckSubdomainRoute: typeof ApiTunnelCheckSubdomainRoute
   ApiTunnelRegisterRoute: typeof ApiTunnelRegisterRoute
@@ -715,6 +729,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiTunnelAuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/subscriptions/$organizationId': {
+      id: '/api/subscriptions/$organizationId'
+      path: '/api/subscriptions/$organizationId'
+      fullPath: '/api/subscriptions/$organizationId'
+      preLoaderRoute: typeof ApiSubscriptionsOrganizationIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/subdomains/$subdomainId': {
       id: '/api/subdomains/$subdomainId'
       path: '/$subdomainId'
@@ -887,6 +908,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiMeOrgsRoute: ApiMeOrgsRoute,
   ApiStatsOverviewRoute: ApiStatsOverviewRoute,
   ApiStatsTunnelRoute: ApiStatsTunnelRoute,
+  ApiSubscriptionsOrganizationIdRoute: ApiSubscriptionsOrganizationIdRoute,
   ApiTunnelAuthRoute: ApiTunnelAuthRoute,
   ApiTunnelCheckSubdomainRoute: ApiTunnelCheckSubdomainRoute,
   ApiTunnelRegisterRoute: ApiTunnelRegisterRoute,
