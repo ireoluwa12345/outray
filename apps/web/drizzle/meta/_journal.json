@@ -43,6 +43,13 @@
       "when": 1766589797719,
       "tag": "0005_heavy_wolf_cub",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1766652995655,
+      "tag": "0006_orange_thunderbolts",
+      "breakpoints": true
     }
   ]
 }
