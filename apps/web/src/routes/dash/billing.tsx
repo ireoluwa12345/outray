@@ -199,8 +199,7 @@ function BillingView() {
                   "1 Active Tunnel",
                   "1 Subdomain",
                   "1 Team Member",
-                  "100MB Bandwidth",
-                  "1K Requests/month",
+                  "2GB Bandwidth",
                   "3 Days Retention",
                 ]}
                 current={currentPlan === "free"}
@@ -218,9 +217,7 @@ function BillingView() {
                   "3 Team Members",
                   "1 Custom Domain",
                   "10GB Bandwidth",
-                  "100K Requests/month",
                   "14 Days Retention",
-                  "API Access",
                 ]}
                 current={currentPlan === "ray"}
                 onSelect={() => handleCheckout("ray")}
@@ -237,9 +234,7 @@ function BillingView() {
                   "5 Team Members",
                   "Unlimited Custom Domains",
                   "50GB Bandwidth",
-                  "1M Requests/month",
                   "30 Days Retention",
-                  "API Access",
                   "Priority Support",
                 ]}
                 current={currentPlan === "beam"}
@@ -258,9 +253,7 @@ function BillingView() {
                   "Unlimited Team Members",
                   "Unlimited Custom Domains",
                   "1TB Bandwidth",
-                  "10M Requests/month",
                   "90 Days Retention",
-                  "API Access",
                   "Priority Support",
                 ]}
                 current={currentPlan === "pulse"}
