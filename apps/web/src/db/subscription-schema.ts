@@ -1,12 +1,5 @@
 import { relations } from "drizzle-orm";
-import {
-  pgTable,
-  text,
-  timestamp,
-  integer,
-  boolean,
-  index,
-} from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, index } from "drizzle-orm/pg-core";
 import { organizations } from "./auth-schema";
 
 export const subscriptions = pgTable(
@@ -17,7 +10,7 @@ export const subscriptions = pgTable(
       .notNull()
       .unique()
       .references(() => organizations.id, { onDelete: "cascade" }),
-    plan: text("plan").notNull().default("free"), // free, ray, beam
+    plan: text("plan").notNull().default("free"), // free, ray, beam, pulse
     status: text("status").notNull().default("active"), // active, cancelled, past_due, paused
     polarCustomerId: text("polar_customer_id"),
     polarSubscriptionId: text("polar_subscription_id"),
@@ -26,8 +19,6 @@ export const subscriptions = pgTable(
     cancelAtPeriodEnd: boolean("cancel_at_period_end").default(false).notNull(),
     canceledAt: timestamp("canceled_at"),
     trialEndsAt: timestamp("trial_ends_at"),
-    extraMembers: integer("extra_members").default(0).notNull(), // Additional members beyond plan limit
-    extraDomains: integer("extra_domains").default(0).notNull(), // Additional domains beyond plan limit (Ray only)
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
       .defaultNow()
