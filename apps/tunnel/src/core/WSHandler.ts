@@ -26,6 +26,7 @@ export class WSHandler {
     tokenType?: "legacy" | "org";
     bandwidthLimit?: number;
     retentionDays?: number;
+    plan?: string;
   }> {
     try {
       const response = await fetch(`${this.webApiUrl}/tunnel/auth`, {
@@ -42,6 +43,7 @@ export class WSHandler {
         tokenType?: "legacy" | "org";
         bandwidthLimit?: number;
         retentionDays?: number;
+        plan?: string;
       };
     } catch (error) {
       console.error("Failed to validate Auth Token:", error);
@@ -142,6 +144,7 @@ export class WSHandler {
             let userId: string | undefined;
             let bandwidthLimit: number | undefined;
             let retentionDays: number | undefined;
+            let plan: string | undefined;
 
             if (message.apiKey) {
               const authResult = await this.validateAuthToken(message.apiKey);
@@ -161,6 +164,7 @@ export class WSHandler {
               userId = authResult.userId;
               bandwidthLimit = authResult.bandwidthLimit;
               retentionDays = authResult.retentionDays;
+              plan = authResult.plan;
               console.log(
                 `Authenticated organization: ${authResult.organization?.name}`,
               );
@@ -241,6 +245,7 @@ export class WSHandler {
                   type: "tunnel_opened",
                   tunnelId,
                   url: tunnelUrl,
+                  plan,
                 }),
               );
               console.log(`Tunnel opened with custom domain: ${tunnelId}`);
@@ -411,6 +416,7 @@ export class WSHandler {
               type: "tunnel_opened",
               tunnelId: fullHostname,
               url: tunnelUrl,
+              plan,
             });
 
             ws.send(response);
