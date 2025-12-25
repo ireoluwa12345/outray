@@ -16,6 +16,7 @@ export interface TunnelOpenedMessage {
   type: "tunnel_opened";
   tunnelId: string;
   url: string;
+  plan?: string;
 }
 
 export interface RequestMessage {

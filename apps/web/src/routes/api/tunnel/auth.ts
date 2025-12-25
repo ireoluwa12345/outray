@@ -101,6 +101,7 @@ export const Route = createFileRoute("/api/tunnel/auth")({
             tokenType,
             bandwidthLimit,
             retentionDays,
+            plan,
           });
         } catch (error) {
           console.error("Error in /api/tunnel/auth:", error);
