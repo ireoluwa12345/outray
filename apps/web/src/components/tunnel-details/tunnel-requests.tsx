@@ -47,8 +47,8 @@ export function TunnelRequests({ tunnelId }: TunnelRequestsProps) {
   const [requests, setRequests] = useState<TunnelEvent[]>([]);
   const [timeRange, setTimeRange] = useState<TimeRange>("live");
   const [isLoading, setIsLoading] = useState(false);
-  const { selectedOrganizationId } = useAppStore();
-  const activeOrgId = selectedOrganizationId;
+  const { selectedOrganization } = useAppStore();
+  const activeOrgId = selectedOrganization?.id;
   const wsRef = useRef<WebSocket | null>(null);
 
   const activeIndex = TIME_RANGES.findIndex((r) => r.value === timeRange);

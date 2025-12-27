@@ -2,19 +2,18 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Building2, Hash, Type } from "lucide-react";
 import { useAppStore } from "../../../lib/store";
 import { authClient } from "../../../lib/auth-client";
-import { useQuery } from "@tanstack/react-query";
 
-export const Route = createFileRoute("/dash/settings/organization")({
+export const Route = createFileRoute("/$orgSlug/settings/organization")({
   component: OrganizationSettingsView,
 });
 
 function OrganizationSettingsView() {
-  const { selectedOrganizationId } = useAppStore();
+  const { selectedOrganization } = useAppStore();
 
   const { data: organizations } = authClient.useListOrganizations();
 
   const currentOrg = organizations?.find(
-    (org) => org.id === selectedOrganizationId,
+    (org) => org.id === selectedOrganization?.id,
   );
 
   if (!currentOrg) {

@@ -20,11 +20,12 @@ import axios from "axios";
 import { NewTunnelModal } from "../../../components/new-tunnel-modal";
 import { LimitModal } from "../../../components/limit-modal";
 
-export const Route = createFileRoute("/dash/tunnels/")({
+export const Route = createFileRoute("/$orgSlug/tunnels/")({
   component: TunnelsView,
 });
 
 function TunnelsView() {
+  const { orgSlug } = Route.useParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<"newest" | "oldest" | "name">("newest");
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
@@ -32,8 +33,8 @@ function TunnelsView() {
   const [isNewTunnelModalOpen, setIsNewTunnelModalOpen] = useState(false);
   const [isLimitModalOpen, setIsLimitModalOpen] = useState(false);
 
-  const { selectedOrganizationId } = useAppStore();
-  const activeOrgId = selectedOrganizationId;
+  const { selectedOrganization } = useAppStore();
+  const activeOrgId = selectedOrganization?.id;
 
   const { data: subscriptionData } = useQuery({
     queryKey: ["subscription", activeOrgId],
@@ -164,7 +165,8 @@ function TunnelsView() {
             </p>
           </div>
           <Link
-            to="/dash/billing"
+            to="/$orgSlug/billing"
+            params={{ orgSlug }}
             search={{ success: false }}
             className="ml-auto px-4 py-2 bg-orange-500/10 hover:bg-orange-500/20 text-orange-200 text-xs font-medium rounded-lg transition-colors"
           >
@@ -282,8 +284,8 @@ function TunnelsView() {
           filteredTunnels.map((tunnel) => (
             <Link
               key={tunnel.id}
-              to="/dash/tunnels/$tunnelId"
-              params={{ tunnelId: tunnel.id }}
+              to="/$orgSlug/tunnels/$tunnelId"
+              params={{ orgSlug, tunnelId: tunnel.id }}
               className={`block group bg-white/2 border border-white/5 rounded-2xl hover:border-white/10 transition-all ${
                 viewMode === "grid" ? "p-6 h-full flex flex-col" : "p-6"
               }`}

@@ -1,13 +1,23 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, Navigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Sidebar } from "../components/sidebar";
+import { authClient } from "../lib/auth-client";
 
-export const Route = createFileRoute("/dash")({
+export const Route = createFileRoute("/$orgSlug")({
   component: DashboardLayout,
 });
 
 function DashboardLayout() {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const { data: organizations, isPending } = authClient.useListOrganizations();
+
+  if (isPending) {
+    return null;
+  }
+
+  if (!organizations?.length) {
+    return <Navigate to="/onboarding" />;
+  }
 
   return (
     <div className="min-h-screen bg-[#070707] text-gray-300 font-sans selection:bg-accent/30">

@@ -11,7 +11,8 @@ function formatBytes(bytes: number): string {
 }
 
 export function BandwidthUsage() {
-  const { selectedOrganizationId } = useAppStore();
+  const { selectedOrganization } = useAppStore();
+  const selectedOrganizationId = selectedOrganization?.id;
 
   const { data, isLoading } = useQuery({
     queryKey: ["bandwidth", selectedOrganizationId],

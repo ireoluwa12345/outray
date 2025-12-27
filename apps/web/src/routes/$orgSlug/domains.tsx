@@ -13,13 +13,13 @@ import { DomainCard } from "../../components/domains/domain-card";
 import { LimitModal } from "../../components/limit-modal";
 import { AlertModal } from "../../components/alert-modal";
 
-export const Route = createFileRoute("/dash/domains")({
+export const Route = createFileRoute("/$orgSlug/domains")({
   component: DomainsView,
 });
 
 function DomainsView() {
-  const { selectedOrganizationId } = useAppStore();
-  const activeOrgId = selectedOrganizationId;
+  const { selectedOrganization } = useAppStore();
+  const activeOrgId = selectedOrganization?.id;
   const queryClient = useQueryClient();
   const [isCreating, setIsCreating] = useState(false);
   const [isLimitModalOpen, setIsLimitModalOpen] = useState(false);

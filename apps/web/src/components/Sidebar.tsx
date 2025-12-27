@@ -10,7 +10,6 @@ import {
   Link2,
   CreditCard,
   Users,
-  Activity,
 } from "lucide-react";
 import { useAppStore } from "../lib/store";
 import { authClient } from "../lib/auth-client";
@@ -29,10 +28,12 @@ interface SidebarProps {
 }
 
 export function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
-  const { selectedOrganizationId, setSelectedOrganizationId } = useAppStore();
+  const { selectedOrganization, setSelectedOrganization } = useAppStore();
   const [organizations, setOrganizations] = useState<any[]>([]);
   const [isOrgDropdownOpen, setIsOrgDropdownOpen] = useState(false);
   const [activeTunnelsCount, setActiveTunnelsCount] = useState<number>(0);
+
+  const selectedOrganizationId = selectedOrganization?.id;
 
   const { data: session } = authClient.useSession();
   const user = session?.user;
@@ -59,10 +60,15 @@ export function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
       const { data } = await authClient.organization.list();
       if (data) {
         setOrganizations(data);
-        if (!selectedOrganizationId && data.length > 0) {
+        if (!selectedOrganization && data.length > 0) {
           const session = await authClient.getSession();
           const activeOrgId = session.data?.session.activeOrganizationId;
-          setSelectedOrganizationId(activeOrgId || data[0].id);
+          const orgToSelect = data.find((o) => o.id === activeOrgId) || data[0];
+          setSelectedOrganization({
+            id: orgToSelect.id,
+            name: orgToSelect.name,
+            slug: orgToSelect.slug,
+          });
         }
       }
     };
@@ -177,8 +183,8 @@ export function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
 
       <OrganizationDropdown
         organizations={organizations}
-        selectedOrganizationId={selectedOrganizationId}
-        setSelectedOrganizationId={setSelectedOrganizationId}
+        selectedOrganization={selectedOrganization}
+        setSelectedOrganization={setSelectedOrganization}
         isOrgDropdownOpen={isOrgDropdownOpen}
         setIsOrgDropdownOpen={setIsOrgDropdownOpen}
         isCollapsed={isCollapsed}

@@ -11,30 +11,27 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as DashRouteImport } from './routes/dash'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as OrgSlugRouteImport } from './routes/$orgSlug'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DashIndexRouteImport } from './routes/dash/index'
+import { Route as OrgSlugIndexRouteImport } from './routes/$orgSlug/index'
 import { Route as InvitationsAcceptRouteImport } from './routes/invitations.accept'
 import { Route as InternalDomainCheckRouteImport } from './routes/internal/domain-check'
-import { Route as DashSubdomainsRouteImport } from './routes/dash/subdomains'
-import { Route as DashSettingsRouteImport } from './routes/dash/settings'
-import { Route as DashRequestsRouteImport } from './routes/dash/requests'
-import { Route as DashMembersRouteImport } from './routes/dash/members'
-import { Route as DashInstallRouteImport } from './routes/dash/install'
-import { Route as DashDomainsRouteImport } from './routes/dash/domains'
-import { Route as DashBillingRouteImport } from './routes/dash/billing'
 import { Route as CliLoginRouteImport } from './routes/cli.login'
 import { Route as ApiSubdomainsRouteImport } from './routes/api/subdomains'
 import { Route as ApiRequestsRouteImport } from './routes/api/requests'
 import { Route as ApiAuthTokensRouteImport } from './routes/api/auth-tokens'
-import { Route as DashTunnelsIndexRouteImport } from './routes/dash/tunnels/index'
-import { Route as DashSettingsIndexRouteImport } from './routes/dash/settings/index'
+import { Route as OrgSlugSubdomainsRouteImport } from './routes/$orgSlug/subdomains'
+import { Route as OrgSlugSettingsRouteImport } from './routes/$orgSlug/settings'
+import { Route as OrgSlugRequestsRouteImport } from './routes/$orgSlug/requests'
+import { Route as OrgSlugMembersRouteImport } from './routes/$orgSlug/members'
+import { Route as OrgSlugInstallRouteImport } from './routes/$orgSlug/install'
+import { Route as OrgSlugDomainsRouteImport } from './routes/$orgSlug/domains'
+import { Route as OrgSlugBillingRouteImport } from './routes/$orgSlug/billing'
 import { Route as ApiTunnelsIndexRouteImport } from './routes/api/tunnels/index'
 import { Route as ApiDomainsIndexRouteImport } from './routes/api/domains/index'
-import { Route as DashTunnelsTunnelIdRouteImport } from './routes/dash/tunnels/$tunnelId'
-import { Route as DashSettingsProfileRouteImport } from './routes/dash/settings/profile'
-import { Route as DashSettingsOrganizationRouteImport } from './routes/dash/settings/organization'
+import { Route as OrgSlugTunnelsIndexRouteImport } from './routes/$orgSlug/tunnels/index'
+import { Route as OrgSlugSettingsIndexRouteImport } from './routes/$orgSlug/settings/index'
 import { Route as ApiWebhooksPolarRouteImport } from './routes/api/webhooks/polar'
 import { Route as ApiTunnelsTunnelIdRouteImport } from './routes/api/tunnels/$tunnelId'
 import { Route as ApiTunnelRegisterRouteImport } from './routes/api/tunnel/register'
@@ -57,6 +54,9 @@ import { Route as ApiCheckoutPolarRouteImport } from './routes/api/checkout/pola
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiAdminStatsRouteImport } from './routes/api/admin/stats'
 import { Route as ApiAdminLoginRouteImport } from './routes/api/admin/login'
+import { Route as OrgSlugTunnelsTunnelIdRouteImport } from './routes/$orgSlug/tunnels/$tunnelId'
+import { Route as OrgSlugSettingsProfileRouteImport } from './routes/$orgSlug/settings/profile'
+import { Route as OrgSlugSettingsOrganizationRouteImport } from './routes/$orgSlug/settings/organization'
 import { Route as ApiTunnelsTunnelIdStopRouteImport } from './routes/api/tunnels/$tunnelId.stop'
 import { Route as ApiDomainsDomainIdVerifyRouteImport } from './routes/api/domains/$domainId.verify'
 import { Route as ApiCliLoginStatusRouteImport } from './routes/api/cli/login/status'
@@ -71,14 +71,14 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashRoute = DashRouteImport.update({
-  id: '/dash',
-  path: '/dash',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrgSlugRoute = OrgSlugRouteImport.update({
+  id: '/$orgSlug',
+  path: '/$orgSlug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -86,10 +86,10 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashIndexRoute = DashIndexRouteImport.update({
+const OrgSlugIndexRoute = OrgSlugIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => DashRoute,
+  getParentRoute: () => OrgSlugRoute,
 } as any)
 const InvitationsAcceptRoute = InvitationsAcceptRouteImport.update({
   id: '/invitations/accept',
@@ -100,41 +100,6 @@ const InternalDomainCheckRoute = InternalDomainCheckRouteImport.update({
   id: '/internal/domain-check',
   path: '/internal/domain-check',
   getParentRoute: () => rootRouteImport,
-} as any)
-const DashSubdomainsRoute = DashSubdomainsRouteImport.update({
-  id: '/subdomains',
-  path: '/subdomains',
-  getParentRoute: () => DashRoute,
-} as any)
-const DashSettingsRoute = DashSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => DashRoute,
-} as any)
-const DashRequestsRoute = DashRequestsRouteImport.update({
-  id: '/requests',
-  path: '/requests',
-  getParentRoute: () => DashRoute,
-} as any)
-const DashMembersRoute = DashMembersRouteImport.update({
-  id: '/members',
-  path: '/members',
-  getParentRoute: () => DashRoute,
-} as any)
-const DashInstallRoute = DashInstallRouteImport.update({
-  id: '/install',
-  path: '/install',
-  getParentRoute: () => DashRoute,
-} as any)
-const DashDomainsRoute = DashDomainsRouteImport.update({
-  id: '/domains',
-  path: '/domains',
-  getParentRoute: () => DashRoute,
-} as any)
-const DashBillingRoute = DashBillingRouteImport.update({
-  id: '/billing',
-  path: '/billing',
-  getParentRoute: () => DashRoute,
 } as any)
 const CliLoginRoute = CliLoginRouteImport.update({
   id: '/cli/login',
@@ -156,15 +121,40 @@ const ApiAuthTokensRoute = ApiAuthTokensRouteImport.update({
   path: '/api/auth-tokens',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashTunnelsIndexRoute = DashTunnelsIndexRouteImport.update({
-  id: '/tunnels/',
-  path: '/tunnels/',
-  getParentRoute: () => DashRoute,
+const OrgSlugSubdomainsRoute = OrgSlugSubdomainsRouteImport.update({
+  id: '/subdomains',
+  path: '/subdomains',
+  getParentRoute: () => OrgSlugRoute,
 } as any)
-const DashSettingsIndexRoute = DashSettingsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => DashSettingsRoute,
+const OrgSlugSettingsRoute = OrgSlugSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => OrgSlugRoute,
+} as any)
+const OrgSlugRequestsRoute = OrgSlugRequestsRouteImport.update({
+  id: '/requests',
+  path: '/requests',
+  getParentRoute: () => OrgSlugRoute,
+} as any)
+const OrgSlugMembersRoute = OrgSlugMembersRouteImport.update({
+  id: '/members',
+  path: '/members',
+  getParentRoute: () => OrgSlugRoute,
+} as any)
+const OrgSlugInstallRoute = OrgSlugInstallRouteImport.update({
+  id: '/install',
+  path: '/install',
+  getParentRoute: () => OrgSlugRoute,
+} as any)
+const OrgSlugDomainsRoute = OrgSlugDomainsRouteImport.update({
+  id: '/domains',
+  path: '/domains',
+  getParentRoute: () => OrgSlugRoute,
+} as any)
+const OrgSlugBillingRoute = OrgSlugBillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
+  getParentRoute: () => OrgSlugRoute,
 } as any)
 const ApiTunnelsIndexRoute = ApiTunnelsIndexRouteImport.update({
   id: '/api/tunnels/',
@@ -176,22 +166,16 @@ const ApiDomainsIndexRoute = ApiDomainsIndexRouteImport.update({
   path: '/api/domains/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashTunnelsTunnelIdRoute = DashTunnelsTunnelIdRouteImport.update({
-  id: '/tunnels/$tunnelId',
-  path: '/tunnels/$tunnelId',
-  getParentRoute: () => DashRoute,
+const OrgSlugTunnelsIndexRoute = OrgSlugTunnelsIndexRouteImport.update({
+  id: '/tunnels/',
+  path: '/tunnels/',
+  getParentRoute: () => OrgSlugRoute,
 } as any)
-const DashSettingsProfileRoute = DashSettingsProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => DashSettingsRoute,
+const OrgSlugSettingsIndexRoute = OrgSlugSettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => OrgSlugSettingsRoute,
 } as any)
-const DashSettingsOrganizationRoute =
-  DashSettingsOrganizationRouteImport.update({
-    id: '/organization',
-    path: '/organization',
-    getParentRoute: () => DashSettingsRoute,
-  } as any)
 const ApiWebhooksPolarRoute = ApiWebhooksPolarRouteImport.update({
   id: '/api/webhooks/polar',
   path: '/api/webhooks/polar',
@@ -306,6 +290,22 @@ const ApiAdminLoginRoute = ApiAdminLoginRouteImport.update({
   path: '/api/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrgSlugTunnelsTunnelIdRoute = OrgSlugTunnelsTunnelIdRouteImport.update({
+  id: '/tunnels/$tunnelId',
+  path: '/tunnels/$tunnelId',
+  getParentRoute: () => OrgSlugRoute,
+} as any)
+const OrgSlugSettingsProfileRoute = OrgSlugSettingsProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => OrgSlugSettingsRoute,
+} as any)
+const OrgSlugSettingsOrganizationRoute =
+  OrgSlugSettingsOrganizationRouteImport.update({
+    id: '/organization',
+    path: '/organization',
+    getParentRoute: () => OrgSlugSettingsRoute,
+  } as any)
 const ApiTunnelsTunnelIdStopRoute = ApiTunnelsTunnelIdStopRouteImport.update({
   id: '/stop',
   path: '/stop',
@@ -325,24 +325,27 @@ const ApiCliLoginStatusRoute = ApiCliLoginStatusRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/$orgSlug': typeof OrgSlugRouteWithChildren
   '/admin': typeof AdminRoute
-  '/dash': typeof DashRouteWithChildren
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
+  '/$orgSlug/billing': typeof OrgSlugBillingRoute
+  '/$orgSlug/domains': typeof OrgSlugDomainsRoute
+  '/$orgSlug/install': typeof OrgSlugInstallRoute
+  '/$orgSlug/members': typeof OrgSlugMembersRoute
+  '/$orgSlug/requests': typeof OrgSlugRequestsRoute
+  '/$orgSlug/settings': typeof OrgSlugSettingsRouteWithChildren
+  '/$orgSlug/subdomains': typeof OrgSlugSubdomainsRoute
   '/api/auth-tokens': typeof ApiAuthTokensRoute
   '/api/requests': typeof ApiRequestsRoute
   '/api/subdomains': typeof ApiSubdomainsRouteWithChildren
   '/cli/login': typeof CliLoginRoute
-  '/dash/billing': typeof DashBillingRoute
-  '/dash/domains': typeof DashDomainsRoute
-  '/dash/install': typeof DashInstallRoute
-  '/dash/members': typeof DashMembersRoute
-  '/dash/requests': typeof DashRequestsRoute
-  '/dash/settings': typeof DashSettingsRouteWithChildren
-  '/dash/subdomains': typeof DashSubdomainsRoute
   '/internal/domain-check': typeof InternalDomainCheckRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
-  '/dash/': typeof DashIndexRoute
+  '/$orgSlug/': typeof OrgSlugIndexRoute
+  '/$orgSlug/settings/organization': typeof OrgSlugSettingsOrganizationRoute
+  '/$orgSlug/settings/profile': typeof OrgSlugSettingsProfileRoute
+  '/$orgSlug/tunnels/$tunnelId': typeof OrgSlugTunnelsTunnelIdRoute
   '/api/admin/login': typeof ApiAdminLoginRoute
   '/api/admin/stats': typeof ApiAdminStatsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -365,13 +368,10 @@ export interface FileRoutesByFullPath {
   '/api/tunnel/register': typeof ApiTunnelRegisterRoute
   '/api/tunnels/$tunnelId': typeof ApiTunnelsTunnelIdRouteWithChildren
   '/api/webhooks/polar': typeof ApiWebhooksPolarRoute
-  '/dash/settings/organization': typeof DashSettingsOrganizationRoute
-  '/dash/settings/profile': typeof DashSettingsProfileRoute
-  '/dash/tunnels/$tunnelId': typeof DashTunnelsTunnelIdRoute
+  '/$orgSlug/settings/': typeof OrgSlugSettingsIndexRoute
+  '/$orgSlug/tunnels': typeof OrgSlugTunnelsIndexRoute
   '/api/domains': typeof ApiDomainsIndexRoute
   '/api/tunnels': typeof ApiTunnelsIndexRoute
-  '/dash/settings/': typeof DashSettingsIndexRoute
-  '/dash/tunnels': typeof DashTunnelsIndexRoute
   '/api/cli/login/status': typeof ApiCliLoginStatusRoute
   '/api/domains/$domainId/verify': typeof ApiDomainsDomainIdVerifyRoute
   '/api/tunnels/$tunnelId/stop': typeof ApiTunnelsTunnelIdStopRoute
@@ -381,19 +381,22 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
+  '/$orgSlug/billing': typeof OrgSlugBillingRoute
+  '/$orgSlug/domains': typeof OrgSlugDomainsRoute
+  '/$orgSlug/install': typeof OrgSlugInstallRoute
+  '/$orgSlug/members': typeof OrgSlugMembersRoute
+  '/$orgSlug/requests': typeof OrgSlugRequestsRoute
+  '/$orgSlug/subdomains': typeof OrgSlugSubdomainsRoute
   '/api/auth-tokens': typeof ApiAuthTokensRoute
   '/api/requests': typeof ApiRequestsRoute
   '/api/subdomains': typeof ApiSubdomainsRouteWithChildren
   '/cli/login': typeof CliLoginRoute
-  '/dash/billing': typeof DashBillingRoute
-  '/dash/domains': typeof DashDomainsRoute
-  '/dash/install': typeof DashInstallRoute
-  '/dash/members': typeof DashMembersRoute
-  '/dash/requests': typeof DashRequestsRoute
-  '/dash/subdomains': typeof DashSubdomainsRoute
   '/internal/domain-check': typeof InternalDomainCheckRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
-  '/dash': typeof DashIndexRoute
+  '/$orgSlug': typeof OrgSlugIndexRoute
+  '/$orgSlug/settings/organization': typeof OrgSlugSettingsOrganizationRoute
+  '/$orgSlug/settings/profile': typeof OrgSlugSettingsProfileRoute
+  '/$orgSlug/tunnels/$tunnelId': typeof OrgSlugTunnelsTunnelIdRoute
   '/api/admin/login': typeof ApiAdminLoginRoute
   '/api/admin/stats': typeof ApiAdminStatsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -416,13 +419,10 @@ export interface FileRoutesByTo {
   '/api/tunnel/register': typeof ApiTunnelRegisterRoute
   '/api/tunnels/$tunnelId': typeof ApiTunnelsTunnelIdRouteWithChildren
   '/api/webhooks/polar': typeof ApiWebhooksPolarRoute
-  '/dash/settings/organization': typeof DashSettingsOrganizationRoute
-  '/dash/settings/profile': typeof DashSettingsProfileRoute
-  '/dash/tunnels/$tunnelId': typeof DashTunnelsTunnelIdRoute
+  '/$orgSlug/settings': typeof OrgSlugSettingsIndexRoute
+  '/$orgSlug/tunnels': typeof OrgSlugTunnelsIndexRoute
   '/api/domains': typeof ApiDomainsIndexRoute
   '/api/tunnels': typeof ApiTunnelsIndexRoute
-  '/dash/settings': typeof DashSettingsIndexRoute
-  '/dash/tunnels': typeof DashTunnelsIndexRoute
   '/api/cli/login/status': typeof ApiCliLoginStatusRoute
   '/api/domains/$domainId/verify': typeof ApiDomainsDomainIdVerifyRoute
   '/api/tunnels/$tunnelId/stop': typeof ApiTunnelsTunnelIdStopRoute
@@ -430,24 +430,27 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/$orgSlug': typeof OrgSlugRouteWithChildren
   '/admin': typeof AdminRoute
-  '/dash': typeof DashRouteWithChildren
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
+  '/$orgSlug/billing': typeof OrgSlugBillingRoute
+  '/$orgSlug/domains': typeof OrgSlugDomainsRoute
+  '/$orgSlug/install': typeof OrgSlugInstallRoute
+  '/$orgSlug/members': typeof OrgSlugMembersRoute
+  '/$orgSlug/requests': typeof OrgSlugRequestsRoute
+  '/$orgSlug/settings': typeof OrgSlugSettingsRouteWithChildren
+  '/$orgSlug/subdomains': typeof OrgSlugSubdomainsRoute
   '/api/auth-tokens': typeof ApiAuthTokensRoute
   '/api/requests': typeof ApiRequestsRoute
   '/api/subdomains': typeof ApiSubdomainsRouteWithChildren
   '/cli/login': typeof CliLoginRoute
-  '/dash/billing': typeof DashBillingRoute
-  '/dash/domains': typeof DashDomainsRoute
-  '/dash/install': typeof DashInstallRoute
-  '/dash/members': typeof DashMembersRoute
-  '/dash/requests': typeof DashRequestsRoute
-  '/dash/settings': typeof DashSettingsRouteWithChildren
-  '/dash/subdomains': typeof DashSubdomainsRoute
   '/internal/domain-check': typeof InternalDomainCheckRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
-  '/dash/': typeof DashIndexRoute
+  '/$orgSlug/': typeof OrgSlugIndexRoute
+  '/$orgSlug/settings/organization': typeof OrgSlugSettingsOrganizationRoute
+  '/$orgSlug/settings/profile': typeof OrgSlugSettingsProfileRoute
+  '/$orgSlug/tunnels/$tunnelId': typeof OrgSlugTunnelsTunnelIdRoute
   '/api/admin/login': typeof ApiAdminLoginRoute
   '/api/admin/stats': typeof ApiAdminStatsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -470,13 +473,10 @@ export interface FileRoutesById {
   '/api/tunnel/register': typeof ApiTunnelRegisterRoute
   '/api/tunnels/$tunnelId': typeof ApiTunnelsTunnelIdRouteWithChildren
   '/api/webhooks/polar': typeof ApiWebhooksPolarRoute
-  '/dash/settings/organization': typeof DashSettingsOrganizationRoute
-  '/dash/settings/profile': typeof DashSettingsProfileRoute
-  '/dash/tunnels/$tunnelId': typeof DashTunnelsTunnelIdRoute
+  '/$orgSlug/settings/': typeof OrgSlugSettingsIndexRoute
+  '/$orgSlug/tunnels/': typeof OrgSlugTunnelsIndexRoute
   '/api/domains/': typeof ApiDomainsIndexRoute
   '/api/tunnels/': typeof ApiTunnelsIndexRoute
-  '/dash/settings/': typeof DashSettingsIndexRoute
-  '/dash/tunnels/': typeof DashTunnelsIndexRoute
   '/api/cli/login/status': typeof ApiCliLoginStatusRoute
   '/api/domains/$domainId/verify': typeof ApiDomainsDomainIdVerifyRoute
   '/api/tunnels/$tunnelId/stop': typeof ApiTunnelsTunnelIdStopRoute
@@ -485,24 +485,27 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/$orgSlug'
     | '/admin'
-    | '/dash'
     | '/login'
     | '/onboarding'
+    | '/$orgSlug/billing'
+    | '/$orgSlug/domains'
+    | '/$orgSlug/install'
+    | '/$orgSlug/members'
+    | '/$orgSlug/requests'
+    | '/$orgSlug/settings'
+    | '/$orgSlug/subdomains'
     | '/api/auth-tokens'
     | '/api/requests'
     | '/api/subdomains'
     | '/cli/login'
-    | '/dash/billing'
-    | '/dash/domains'
-    | '/dash/install'
-    | '/dash/members'
-    | '/dash/requests'
-    | '/dash/settings'
-    | '/dash/subdomains'
     | '/internal/domain-check'
     | '/invitations/accept'
-    | '/dash/'
+    | '/$orgSlug/'
+    | '/$orgSlug/settings/organization'
+    | '/$orgSlug/settings/profile'
+    | '/$orgSlug/tunnels/$tunnelId'
     | '/api/admin/login'
     | '/api/admin/stats'
     | '/api/auth/$'
@@ -525,13 +528,10 @@ export interface FileRouteTypes {
     | '/api/tunnel/register'
     | '/api/tunnels/$tunnelId'
     | '/api/webhooks/polar'
-    | '/dash/settings/organization'
-    | '/dash/settings/profile'
-    | '/dash/tunnels/$tunnelId'
+    | '/$orgSlug/settings/'
+    | '/$orgSlug/tunnels'
     | '/api/domains'
     | '/api/tunnels'
-    | '/dash/settings/'
-    | '/dash/tunnels'
     | '/api/cli/login/status'
     | '/api/domains/$domainId/verify'
     | '/api/tunnels/$tunnelId/stop'
@@ -541,19 +541,22 @@ export interface FileRouteTypes {
     | '/admin'
     | '/login'
     | '/onboarding'
+    | '/$orgSlug/billing'
+    | '/$orgSlug/domains'
+    | '/$orgSlug/install'
+    | '/$orgSlug/members'
+    | '/$orgSlug/requests'
+    | '/$orgSlug/subdomains'
     | '/api/auth-tokens'
     | '/api/requests'
     | '/api/subdomains'
     | '/cli/login'
-    | '/dash/billing'
-    | '/dash/domains'
-    | '/dash/install'
-    | '/dash/members'
-    | '/dash/requests'
-    | '/dash/subdomains'
     | '/internal/domain-check'
     | '/invitations/accept'
-    | '/dash'
+    | '/$orgSlug'
+    | '/$orgSlug/settings/organization'
+    | '/$orgSlug/settings/profile'
+    | '/$orgSlug/tunnels/$tunnelId'
     | '/api/admin/login'
     | '/api/admin/stats'
     | '/api/auth/$'
@@ -576,37 +579,37 @@ export interface FileRouteTypes {
     | '/api/tunnel/register'
     | '/api/tunnels/$tunnelId'
     | '/api/webhooks/polar'
-    | '/dash/settings/organization'
-    | '/dash/settings/profile'
-    | '/dash/tunnels/$tunnelId'
+    | '/$orgSlug/settings'
+    | '/$orgSlug/tunnels'
     | '/api/domains'
     | '/api/tunnels'
-    | '/dash/settings'
-    | '/dash/tunnels'
     | '/api/cli/login/status'
     | '/api/domains/$domainId/verify'
     | '/api/tunnels/$tunnelId/stop'
   id:
     | '__root__'
     | '/'
+    | '/$orgSlug'
     | '/admin'
-    | '/dash'
     | '/login'
     | '/onboarding'
+    | '/$orgSlug/billing'
+    | '/$orgSlug/domains'
+    | '/$orgSlug/install'
+    | '/$orgSlug/members'
+    | '/$orgSlug/requests'
+    | '/$orgSlug/settings'
+    | '/$orgSlug/subdomains'
     | '/api/auth-tokens'
     | '/api/requests'
     | '/api/subdomains'
     | '/cli/login'
-    | '/dash/billing'
-    | '/dash/domains'
-    | '/dash/install'
-    | '/dash/members'
-    | '/dash/requests'
-    | '/dash/settings'
-    | '/dash/subdomains'
     | '/internal/domain-check'
     | '/invitations/accept'
-    | '/dash/'
+    | '/$orgSlug/'
+    | '/$orgSlug/settings/organization'
+    | '/$orgSlug/settings/profile'
+    | '/$orgSlug/tunnels/$tunnelId'
     | '/api/admin/login'
     | '/api/admin/stats'
     | '/api/auth/$'
@@ -629,13 +632,10 @@ export interface FileRouteTypes {
     | '/api/tunnel/register'
     | '/api/tunnels/$tunnelId'
     | '/api/webhooks/polar'
-    | '/dash/settings/organization'
-    | '/dash/settings/profile'
-    | '/dash/tunnels/$tunnelId'
+    | '/$orgSlug/settings/'
+    | '/$orgSlug/tunnels/'
     | '/api/domains/'
     | '/api/tunnels/'
-    | '/dash/settings/'
-    | '/dash/tunnels/'
     | '/api/cli/login/status'
     | '/api/domains/$domainId/verify'
     | '/api/tunnels/$tunnelId/stop'
@@ -643,8 +643,8 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  OrgSlugRoute: typeof OrgSlugRouteWithChildren
   AdminRoute: typeof AdminRoute
-  DashRoute: typeof DashRouteWithChildren
   LoginRoute: typeof LoginRoute
   OnboardingRoute: typeof OnboardingRoute
   ApiAuthTokensRoute: typeof ApiAuthTokensRoute
@@ -694,18 +694,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dash': {
-      id: '/dash'
-      path: '/dash'
-      fullPath: '/dash'
-      preLoaderRoute: typeof DashRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin': {
       id: '/admin'
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$orgSlug': {
+      id: '/$orgSlug'
+      path: '/$orgSlug'
+      fullPath: '/$orgSlug'
+      preLoaderRoute: typeof OrgSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -715,12 +715,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dash/': {
-      id: '/dash/'
+    '/$orgSlug/': {
+      id: '/$orgSlug/'
       path: '/'
-      fullPath: '/dash/'
-      preLoaderRoute: typeof DashIndexRouteImport
-      parentRoute: typeof DashRoute
+      fullPath: '/$orgSlug/'
+      preLoaderRoute: typeof OrgSlugIndexRouteImport
+      parentRoute: typeof OrgSlugRoute
     }
     '/invitations/accept': {
       id: '/invitations/accept'
@@ -735,55 +735,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/internal/domain-check'
       preLoaderRoute: typeof InternalDomainCheckRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/dash/subdomains': {
-      id: '/dash/subdomains'
-      path: '/subdomains'
-      fullPath: '/dash/subdomains'
-      preLoaderRoute: typeof DashSubdomainsRouteImport
-      parentRoute: typeof DashRoute
-    }
-    '/dash/settings': {
-      id: '/dash/settings'
-      path: '/settings'
-      fullPath: '/dash/settings'
-      preLoaderRoute: typeof DashSettingsRouteImport
-      parentRoute: typeof DashRoute
-    }
-    '/dash/requests': {
-      id: '/dash/requests'
-      path: '/requests'
-      fullPath: '/dash/requests'
-      preLoaderRoute: typeof DashRequestsRouteImport
-      parentRoute: typeof DashRoute
-    }
-    '/dash/members': {
-      id: '/dash/members'
-      path: '/members'
-      fullPath: '/dash/members'
-      preLoaderRoute: typeof DashMembersRouteImport
-      parentRoute: typeof DashRoute
-    }
-    '/dash/install': {
-      id: '/dash/install'
-      path: '/install'
-      fullPath: '/dash/install'
-      preLoaderRoute: typeof DashInstallRouteImport
-      parentRoute: typeof DashRoute
-    }
-    '/dash/domains': {
-      id: '/dash/domains'
-      path: '/domains'
-      fullPath: '/dash/domains'
-      preLoaderRoute: typeof DashDomainsRouteImport
-      parentRoute: typeof DashRoute
-    }
-    '/dash/billing': {
-      id: '/dash/billing'
-      path: '/billing'
-      fullPath: '/dash/billing'
-      preLoaderRoute: typeof DashBillingRouteImport
-      parentRoute: typeof DashRoute
     }
     '/cli/login': {
       id: '/cli/login'
@@ -813,19 +764,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthTokensRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dash/tunnels/': {
-      id: '/dash/tunnels/'
-      path: '/tunnels'
-      fullPath: '/dash/tunnels'
-      preLoaderRoute: typeof DashTunnelsIndexRouteImport
-      parentRoute: typeof DashRoute
+    '/$orgSlug/subdomains': {
+      id: '/$orgSlug/subdomains'
+      path: '/subdomains'
+      fullPath: '/$orgSlug/subdomains'
+      preLoaderRoute: typeof OrgSlugSubdomainsRouteImport
+      parentRoute: typeof OrgSlugRoute
     }
-    '/dash/settings/': {
-      id: '/dash/settings/'
-      path: '/'
-      fullPath: '/dash/settings/'
-      preLoaderRoute: typeof DashSettingsIndexRouteImport
-      parentRoute: typeof DashSettingsRoute
+    '/$orgSlug/settings': {
+      id: '/$orgSlug/settings'
+      path: '/settings'
+      fullPath: '/$orgSlug/settings'
+      preLoaderRoute: typeof OrgSlugSettingsRouteImport
+      parentRoute: typeof OrgSlugRoute
+    }
+    '/$orgSlug/requests': {
+      id: '/$orgSlug/requests'
+      path: '/requests'
+      fullPath: '/$orgSlug/requests'
+      preLoaderRoute: typeof OrgSlugRequestsRouteImport
+      parentRoute: typeof OrgSlugRoute
+    }
+    '/$orgSlug/members': {
+      id: '/$orgSlug/members'
+      path: '/members'
+      fullPath: '/$orgSlug/members'
+      preLoaderRoute: typeof OrgSlugMembersRouteImport
+      parentRoute: typeof OrgSlugRoute
+    }
+    '/$orgSlug/install': {
+      id: '/$orgSlug/install'
+      path: '/install'
+      fullPath: '/$orgSlug/install'
+      preLoaderRoute: typeof OrgSlugInstallRouteImport
+      parentRoute: typeof OrgSlugRoute
+    }
+    '/$orgSlug/domains': {
+      id: '/$orgSlug/domains'
+      path: '/domains'
+      fullPath: '/$orgSlug/domains'
+      preLoaderRoute: typeof OrgSlugDomainsRouteImport
+      parentRoute: typeof OrgSlugRoute
+    }
+    '/$orgSlug/billing': {
+      id: '/$orgSlug/billing'
+      path: '/billing'
+      fullPath: '/$orgSlug/billing'
+      preLoaderRoute: typeof OrgSlugBillingRouteImport
+      parentRoute: typeof OrgSlugRoute
     }
     '/api/tunnels/': {
       id: '/api/tunnels/'
@@ -841,26 +827,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiDomainsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dash/tunnels/$tunnelId': {
-      id: '/dash/tunnels/$tunnelId'
-      path: '/tunnels/$tunnelId'
-      fullPath: '/dash/tunnels/$tunnelId'
-      preLoaderRoute: typeof DashTunnelsTunnelIdRouteImport
-      parentRoute: typeof DashRoute
+    '/$orgSlug/tunnels/': {
+      id: '/$orgSlug/tunnels/'
+      path: '/tunnels'
+      fullPath: '/$orgSlug/tunnels'
+      preLoaderRoute: typeof OrgSlugTunnelsIndexRouteImport
+      parentRoute: typeof OrgSlugRoute
     }
-    '/dash/settings/profile': {
-      id: '/dash/settings/profile'
-      path: '/profile'
-      fullPath: '/dash/settings/profile'
-      preLoaderRoute: typeof DashSettingsProfileRouteImport
-      parentRoute: typeof DashSettingsRoute
-    }
-    '/dash/settings/organization': {
-      id: '/dash/settings/organization'
-      path: '/organization'
-      fullPath: '/dash/settings/organization'
-      preLoaderRoute: typeof DashSettingsOrganizationRouteImport
-      parentRoute: typeof DashSettingsRoute
+    '/$orgSlug/settings/': {
+      id: '/$orgSlug/settings/'
+      path: '/'
+      fullPath: '/$orgSlug/settings/'
+      preLoaderRoute: typeof OrgSlugSettingsIndexRouteImport
+      parentRoute: typeof OrgSlugSettingsRoute
     }
     '/api/webhooks/polar': {
       id: '/api/webhooks/polar'
@@ -1016,6 +995,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$orgSlug/tunnels/$tunnelId': {
+      id: '/$orgSlug/tunnels/$tunnelId'
+      path: '/tunnels/$tunnelId'
+      fullPath: '/$orgSlug/tunnels/$tunnelId'
+      preLoaderRoute: typeof OrgSlugTunnelsTunnelIdRouteImport
+      parentRoute: typeof OrgSlugRoute
+    }
+    '/$orgSlug/settings/profile': {
+      id: '/$orgSlug/settings/profile'
+      path: '/profile'
+      fullPath: '/$orgSlug/settings/profile'
+      preLoaderRoute: typeof OrgSlugSettingsProfileRouteImport
+      parentRoute: typeof OrgSlugSettingsRoute
+    }
+    '/$orgSlug/settings/organization': {
+      id: '/$orgSlug/settings/organization'
+      path: '/organization'
+      fullPath: '/$orgSlug/settings/organization'
+      preLoaderRoute: typeof OrgSlugSettingsOrganizationRouteImport
+      parentRoute: typeof OrgSlugSettingsRoute
+    }
     '/api/tunnels/$tunnelId/stop': {
       id: '/api/tunnels/$tunnelId/stop'
       path: '/stop'
@@ -1040,49 +1040,50 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface DashSettingsRouteChildren {
-  DashSettingsOrganizationRoute: typeof DashSettingsOrganizationRoute
-  DashSettingsProfileRoute: typeof DashSettingsProfileRoute
-  DashSettingsIndexRoute: typeof DashSettingsIndexRoute
+interface OrgSlugSettingsRouteChildren {
+  OrgSlugSettingsOrganizationRoute: typeof OrgSlugSettingsOrganizationRoute
+  OrgSlugSettingsProfileRoute: typeof OrgSlugSettingsProfileRoute
+  OrgSlugSettingsIndexRoute: typeof OrgSlugSettingsIndexRoute
 }
 
-const DashSettingsRouteChildren: DashSettingsRouteChildren = {
-  DashSettingsOrganizationRoute: DashSettingsOrganizationRoute,
-  DashSettingsProfileRoute: DashSettingsProfileRoute,
-  DashSettingsIndexRoute: DashSettingsIndexRoute,
+const OrgSlugSettingsRouteChildren: OrgSlugSettingsRouteChildren = {
+  OrgSlugSettingsOrganizationRoute: OrgSlugSettingsOrganizationRoute,
+  OrgSlugSettingsProfileRoute: OrgSlugSettingsProfileRoute,
+  OrgSlugSettingsIndexRoute: OrgSlugSettingsIndexRoute,
 }
 
-const DashSettingsRouteWithChildren = DashSettingsRoute._addFileChildren(
-  DashSettingsRouteChildren,
+const OrgSlugSettingsRouteWithChildren = OrgSlugSettingsRoute._addFileChildren(
+  OrgSlugSettingsRouteChildren,
 )
 
-interface DashRouteChildren {
-  DashBillingRoute: typeof DashBillingRoute
-  DashDomainsRoute: typeof DashDomainsRoute
-  DashInstallRoute: typeof DashInstallRoute
-  DashMembersRoute: typeof DashMembersRoute
-  DashRequestsRoute: typeof DashRequestsRoute
-  DashSettingsRoute: typeof DashSettingsRouteWithChildren
-  DashSubdomainsRoute: typeof DashSubdomainsRoute
-  DashIndexRoute: typeof DashIndexRoute
-  DashTunnelsTunnelIdRoute: typeof DashTunnelsTunnelIdRoute
-  DashTunnelsIndexRoute: typeof DashTunnelsIndexRoute
+interface OrgSlugRouteChildren {
+  OrgSlugBillingRoute: typeof OrgSlugBillingRoute
+  OrgSlugDomainsRoute: typeof OrgSlugDomainsRoute
+  OrgSlugInstallRoute: typeof OrgSlugInstallRoute
+  OrgSlugMembersRoute: typeof OrgSlugMembersRoute
+  OrgSlugRequestsRoute: typeof OrgSlugRequestsRoute
+  OrgSlugSettingsRoute: typeof OrgSlugSettingsRouteWithChildren
+  OrgSlugSubdomainsRoute: typeof OrgSlugSubdomainsRoute
+  OrgSlugIndexRoute: typeof OrgSlugIndexRoute
+  OrgSlugTunnelsTunnelIdRoute: typeof OrgSlugTunnelsTunnelIdRoute
+  OrgSlugTunnelsIndexRoute: typeof OrgSlugTunnelsIndexRoute
 }
 
-const DashRouteChildren: DashRouteChildren = {
-  DashBillingRoute: DashBillingRoute,
-  DashDomainsRoute: DashDomainsRoute,
-  DashInstallRoute: DashInstallRoute,
-  DashMembersRoute: DashMembersRoute,
-  DashRequestsRoute: DashRequestsRoute,
-  DashSettingsRoute: DashSettingsRouteWithChildren,
-  DashSubdomainsRoute: DashSubdomainsRoute,
-  DashIndexRoute: DashIndexRoute,
-  DashTunnelsTunnelIdRoute: DashTunnelsTunnelIdRoute,
-  DashTunnelsIndexRoute: DashTunnelsIndexRoute,
+const OrgSlugRouteChildren: OrgSlugRouteChildren = {
+  OrgSlugBillingRoute: OrgSlugBillingRoute,
+  OrgSlugDomainsRoute: OrgSlugDomainsRoute,
+  OrgSlugInstallRoute: OrgSlugInstallRoute,
+  OrgSlugMembersRoute: OrgSlugMembersRoute,
+  OrgSlugRequestsRoute: OrgSlugRequestsRoute,
+  OrgSlugSettingsRoute: OrgSlugSettingsRouteWithChildren,
+  OrgSlugSubdomainsRoute: OrgSlugSubdomainsRoute,
+  OrgSlugIndexRoute: OrgSlugIndexRoute,
+  OrgSlugTunnelsTunnelIdRoute: OrgSlugTunnelsTunnelIdRoute,
+  OrgSlugTunnelsIndexRoute: OrgSlugTunnelsIndexRoute,
 }
 
-const DashRouteWithChildren = DashRoute._addFileChildren(DashRouteChildren)
+const OrgSlugRouteWithChildren =
+  OrgSlugRoute._addFileChildren(OrgSlugRouteChildren)
 
 interface ApiSubdomainsRouteChildren {
   ApiSubdomainsSubdomainIdRoute: typeof ApiSubdomainsSubdomainIdRoute
@@ -1132,8 +1133,8 @@ const ApiTunnelsTunnelIdRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  OrgSlugRoute: OrgSlugRouteWithChildren,
   AdminRoute: AdminRoute,
-  DashRoute: DashRouteWithChildren,
   LoginRoute: LoginRoute,
   OnboardingRoute: OnboardingRoute,
   ApiAuthTokensRoute: ApiAuthTokensRoute,

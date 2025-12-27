@@ -2,10 +2,16 @@ import { Link } from "@tanstack/react-router";
 import { useRef, useEffect } from "react";
 import { ChevronRight, Check, Plus } from "lucide-react";
 
+interface Organization {
+  id: string;
+  name: string;
+  slug: string;
+}
+
 interface OrganizationDropdownProps {
   organizations: any[];
-  selectedOrganizationId: string | null;
-  setSelectedOrganizationId: (id: string) => void;
+  selectedOrganization: Organization | null;
+  setSelectedOrganization: (org: Organization | null) => void;
   isOrgDropdownOpen: boolean;
   setIsOrgDropdownOpen: (open: boolean) => void;
   isCollapsed: boolean;
@@ -14,8 +20,8 @@ interface OrganizationDropdownProps {
 
 export function OrganizationDropdown({
   organizations,
-  selectedOrganizationId,
-  setSelectedOrganizationId,
+  selectedOrganization,
+  setSelectedOrganization,
   isOrgDropdownOpen,
   setIsOrgDropdownOpen,
   isCollapsed,
@@ -71,17 +77,21 @@ export function OrganizationDropdown({
               <button
                 key={org.id}
                 onClick={() => {
-                  setSelectedOrganizationId(org.id);
+                  setSelectedOrganization({
+                    id: org.id,
+                    name: org.name,
+                    slug: org.slug,
+                  });
                   setIsOrgDropdownOpen(false);
                 }}
                 className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors ${
-                  selectedOrganizationId === org.id
+                  selectedOrganization?.id === org.id
                     ? "bg-accent/10 text-accent"
                     : "text-gray-400 hover:text-white hover:bg-white/5"
                 }`}
               >
                 <span className="truncate">{org.name}</span>
-                {selectedOrganizationId === org.id && <Check size={14} />}
+                {selectedOrganization?.id === org.id && <Check size={14} />}
               </button>
             ))}
           </div>

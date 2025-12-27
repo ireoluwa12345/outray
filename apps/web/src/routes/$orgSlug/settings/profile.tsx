@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { authClient } from "../../../lib/auth-client";
 import { User, Mail } from "lucide-react";
 
-export const Route = createFileRoute("/dash/settings/profile")({
+export const Route = createFileRoute("/$orgSlug/settings/profile")({
   component: ProfileSettingsView,
 });
 
@@ -16,7 +16,6 @@ function ProfileSettingsView() {
 
   return (
     <div className="space-y-6">
-      {/* Profile Section */}
       <div className="bg-white/2 border border-white/5 rounded-2xl overflow-hidden">
         <div className="p-6 border-b border-white/5">
           <div className="flex items-center gap-3">

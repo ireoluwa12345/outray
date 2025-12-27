@@ -30,7 +30,7 @@ import { BandwidthUsage } from "../../components/sidebar/bandwidth-usage";
 import { NewTunnelModal } from "../../components/new-tunnel-modal";
 import { LimitModal } from "../../components/limit-modal";
 
-export const Route = createFileRoute("/dash/")({
+export const Route = createFileRoute("/$orgSlug/")({
   component: OverviewView,
 });
 
@@ -58,8 +58,8 @@ function OverviewView() {
   const [isNewTunnelModalOpen, setIsNewTunnelModalOpen] = useState(false);
   const [isLimitModalOpen, setIsLimitModalOpen] = useState(false);
   const [timeRange, setTimeRange] = useState("24h");
-  const { selectedOrganizationId } = useAppStore();
-  const activeOrganization = selectedOrganizationId;
+  const { selectedOrganization } = useAppStore();
+  const activeOrganization = selectedOrganization?.id;
 
   const { data: subscriptionData } = useQuery({
     queryKey: ["subscription", activeOrganization],
@@ -355,8 +355,11 @@ function OverviewView() {
                   <Network size={32} className="mb-3 opacity-50" />
                   <p className="text-sm">No active tunnels</p>
                   <Link
-                    to="/dash/tunnels"
+                    to="/$orgSlug/tunnels"
                     className="mt-2 text-xs text-accent hover:underline"
+                    params={{
+                      orgSlug: selectedOrganization?.slug!,
+                    }}
                   >
                     Start your first tunnel
                   </Link>
@@ -365,8 +368,11 @@ function OverviewView() {
                 activeTunnels.slice(0, 5).map((tunnel) => (
                   <Link
                     key={tunnel.id}
-                    to="/dash/tunnels/$tunnelId"
-                    params={{ tunnelId: tunnel.id }}
+                    to="/$orgSlug/tunnels/$tunnelId"
+                    params={{
+                      orgSlug: selectedOrganization?.slug!,
+                      tunnelId: tunnel.id,
+                    }}
                     className="block p-3 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl transition-all group"
                     search={{
                       tab: "overview",
@@ -402,8 +408,11 @@ function OverviewView() {
 
             {activeTunnels.length > 0 && (
               <Link
-                to="/dash/tunnels"
+                to="/$orgSlug/tunnels"
                 className="mt-4 flex items-center justify-center gap-2 text-sm text-gray-400 hover:text-white transition-colors py-2 border-t border-white/5"
+                params={{
+                  orgSlug: selectedOrganization?.slug!,
+                }}
               >
                 View all tunnels
                 <ArrowUpRight size={14} />

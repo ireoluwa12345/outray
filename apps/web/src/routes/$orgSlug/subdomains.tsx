@@ -12,13 +12,13 @@ import { CreateSubdomainModal } from "../../components/subdomains/create-subdoma
 import { SubdomainCard } from "../../components/subdomains/subdomain-card";
 import { LimitModal } from "../../components/limit-modal";
 
-export const Route = createFileRoute("/dash/subdomains")({
+export const Route = createFileRoute("/$orgSlug/subdomains")({
   component: SubdomainsView,
 });
 
 function SubdomainsView() {
-  const { selectedOrganizationId } = useAppStore();
-  const activeOrgId = selectedOrganizationId;
+  const { selectedOrganization } = useAppStore();
+  const activeOrgId = selectedOrganization?.id;
   const queryClient = useQueryClient();
   const [isCreating, setIsCreating] = useState(false);
   const [isLimitModalOpen, setIsLimitModalOpen] = useState(false);

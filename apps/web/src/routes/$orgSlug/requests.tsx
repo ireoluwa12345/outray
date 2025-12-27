@@ -3,7 +3,7 @@ import { Search, Radio } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useAppStore } from "../../lib/store";
 
-export const Route = createFileRoute("/dash/requests")({
+export const Route = createFileRoute("/$orgSlug/requests")({
   component: RequestsView,
 });
 
@@ -37,8 +37,8 @@ function RequestsView() {
   const [requests, setRequests] = useState<TunnelEvent[]>([]);
   const [timeRange, setTimeRange] = useState<TimeRange>("live");
   const [isLoading, setIsLoading] = useState(false);
-  const { selectedOrganizationId } = useAppStore();
-  const activeOrgId = selectedOrganizationId;
+  const { selectedOrganization } = useAppStore();
+  const activeOrgId = selectedOrganization?.id;
   const wsRef = useRef<WebSocket | null>(null);
 
   const activeIndex = TIME_RANGES.findIndex((r) => r.value === timeRange);

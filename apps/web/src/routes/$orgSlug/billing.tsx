@@ -13,7 +13,7 @@ import { authClient } from "../../lib/auth-client";
 import { useState } from "react";
 import { AlertModal } from "../../components/alert-modal";
 
-export const Route = createFileRoute("/dash/billing")({
+export const Route = createFileRoute("/$orgSlug/billing")({
   component: BillingView,
   validateSearch: (search?: Record<string, unknown>) => {
     return {
@@ -23,7 +23,8 @@ export const Route = createFileRoute("/dash/billing")({
 });
 
 function BillingView() {
-  const { selectedOrganizationId } = useAppStore();
+  const { selectedOrganization } = useAppStore();
+  const selectedOrganizationId = selectedOrganization?.id;
   const { success } = Route.useSearch();
   const [alertState, setAlertState] = useState<{
     isOpen: boolean;

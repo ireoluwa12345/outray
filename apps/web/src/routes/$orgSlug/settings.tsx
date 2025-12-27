@@ -2,11 +2,12 @@ import { createFileRoute, Outlet, Link } from "@tanstack/react-router";
 import { authClient } from "../../lib/auth-client";
 import { User, Building2 } from "lucide-react";
 
-export const Route = createFileRoute("/dash/settings")({
+export const Route = createFileRoute("/$orgSlug/settings")({
   component: SettingsLayout,
 });
 
 function SettingsLayout() {
+  const { orgSlug } = Route.useParams();
   const { data: session } = authClient.useSession();
   const user = session?.user;
 
@@ -16,12 +17,12 @@ function SettingsLayout() {
 
   const tabs = [
     {
-      to: "/dash/settings/profile",
+      to: `/${orgSlug}/settings/profile`,
       label: "Profile",
       icon: User,
     },
     {
-      to: "/dash/settings/organization",
+      to: `/${orgSlug}/settings/organization`,
       label: "Organization",
       icon: Building2,
     },

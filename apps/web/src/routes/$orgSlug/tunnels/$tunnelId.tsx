@@ -13,7 +13,7 @@ import { TunnelTabs } from "../../../components/tunnel-details/tunnel-tabs";
 import { TunnelOverview } from "../../../components/tunnel-details/tunnel-overview";
 import { TunnelRequests } from "../../../components/tunnel-details/tunnel-requests";
 
-export const Route = createFileRoute("/dash/tunnels/$tunnelId")({
+export const Route = createFileRoute("/$orgSlug/tunnels/$tunnelId")({
   component: TunnelDetailView,
   validateSearch: (search: Record<string, unknown>) => {
     return {

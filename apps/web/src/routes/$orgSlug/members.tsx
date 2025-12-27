@@ -18,12 +18,13 @@ import { AlertModal } from "../../components/alert-modal";
 import { LimitModal } from "../../components/limit-modal";
 import { ConfirmModal } from "../../components/confirm-modal";
 
-export const Route = createFileRoute("/dash/members")({
+export const Route = createFileRoute("/$orgSlug/members")({
   component: MembersView,
 });
 
 function MembersView() {
-  const { selectedOrganizationId } = useAppStore();
+  const { selectedOrganization } = useAppStore();
+  const selectedOrganizationId = selectedOrganization?.id;
   const queryClient = useQueryClient();
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
