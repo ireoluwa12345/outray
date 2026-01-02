@@ -53,9 +53,12 @@ export const Navbar = () => {
           </a>
           {session ? (
             <Link
-              to="/$orgSlug"
+              to={organizations?.length ? "/$orgSlug" : "/select"}
               params={{
-                orgSlug: organizations?.[0]?.slug || "default",
+                orgSlug:
+                  organizations && organizations.length
+                    ? organizations[0].slug
+                    : "",
               }}
               className="px-5 py-2 bg-white text-black rounded-full font-medium hover:bg-gray-200 transition-colors flex items-center gap-2 text-sm"
             >
