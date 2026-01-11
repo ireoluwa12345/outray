@@ -23,7 +23,6 @@ interface AuthToken {
 
 function TokensSettingsView() {
   const { orgSlug } = Route.useParams();
-  const { selectedOrganization } = useAppStore();
   const queryClient = useQueryClient();
   const [isCreating, setIsCreating] = useState(false);
   const [tokenToDelete, setTokenToDelete] = useState<string | null>(null);
@@ -61,7 +60,7 @@ function TokensSettingsView() {
     },
   });
 
-  if (!selectedOrganization) return null;
+
 
   return (
     <div className="space-y-6">
