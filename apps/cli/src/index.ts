@@ -688,8 +688,8 @@ async function main() {
     }
   }
 
-  // Show active org (unless using --org override)
-  if (!tempOrgSlug) {
+  // Show active org (unless using --org override or --key override)
+  if (!tempOrgSlug && !keyArg) {
     const orgSlug = await getOrgSlugForDisplay(config, webUrl);
     if (orgSlug) {
       console.log(chalk.dim(`Org: ${orgSlug}`));
