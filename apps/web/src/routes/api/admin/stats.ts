@@ -1,16 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { json } from "@tanstack/react-start";
-import pg from "pg";
 import { redis } from "../../../lib/redis";
-
-const { Pool } = pg;
-
-const pool = new Pool({
-  connectionString: process.env.TIGER_DATA_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
+import { hashToken } from "../../../lib/hash";
+import { tigerData } from "../../../lib/tigerdata";
 
 export const Route = createFileRoute("/api/admin/stats")({
   server: {
@@ -26,7 +18,7 @@ export const Route = createFileRoute("/api/admin/stats")({
           return json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const tokenKey = `admin:token:${token}`;
+        const tokenKey = `admin:token:${hashToken(token)}`;
         const exists = await redis.get(tokenKey);
         if (!exists) {
           return json({ error: "Forbidden" }, { status: 403 });
@@ -76,7 +68,7 @@ export const Route = createFileRoute("/api/admin/stats")({
         `;
 
         try {
-          const result = await pool.query(query, [
+          const result = await tigerData.query(query, [
             `${intervalMinutes} minutes`,
             points,
           ]);
