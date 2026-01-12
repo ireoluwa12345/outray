@@ -10,9 +10,7 @@ import { LogManager } from "./core/LogManager";
 import { config } from "./config";
 import {
   checkTimescaleDBConnection,
-  logger,
-  requestCaptureLogger,
-  protocolLogger,
+  shutdownLoggers,
 } from "./lib/tigerdata";
 
 const redis = new Redis(config.redisUrl, {
@@ -125,10 +123,8 @@ const shutdown = async () => {
   await router.shutdown();
   await redis.quit();
   
-  // Flush buffered logs before shutdown to prevent data loss
-  await logger.shutdown();
-  await requestCaptureLogger.shutdown();
-  await protocolLogger.shutdown();
+  // Flush buffered logs and close database connection
+  await shutdownLoggers();
   
   httpServer.close(() => process.exit(0));
 };
