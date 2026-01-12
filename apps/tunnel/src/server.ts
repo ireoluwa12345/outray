@@ -8,7 +8,12 @@ import { TCPProxy } from "./core/TCPProxy";
 import { UDPProxy } from "./core/UDPProxy";
 import { LogManager } from "./core/LogManager";
 import { config } from "./config";
-import { checkTimescaleDBConnection } from "./lib/tigerdata";
+import {
+  checkTimescaleDBConnection,
+  logger,
+  requestCaptureLogger,
+  protocolLogger,
+} from "./lib/tigerdata";
 
 const redis = new Redis(config.redisUrl, {
   lazyConnect: true,
@@ -119,6 +124,12 @@ const shutdown = async () => {
   wsHandler.shutdown();
   await router.shutdown();
   await redis.quit();
+  
+  // Flush buffered logs before shutdown to prevent data loss
+  await logger.shutdown();
+  await requestCaptureLogger.shutdown();
+  await protocolLogger.shutdown();
+  
   httpServer.close(() => process.exit(0));
 };
 
