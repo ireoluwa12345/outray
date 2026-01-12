@@ -47,13 +47,21 @@ export const Route = createFileRoute("/api/$orgSlug/requests/replay")({
 
           const startTime = Date.now();
 
-          // Make the actual request
+          // Make the actual request with a timeout
+          const controller = new AbortController();
+          const timeoutMs = 10000;
+          const timeoutId = setTimeout(() => {
+            controller.abort();
+          }, timeoutMs);
+
           const response = await fetch(url, {
             method,
             headers: headers || {},
             body: ["GET", "HEAD"].includes(method) ? undefined : requestBody,
+            signal: controller.signal,
           });
 
+          clearTimeout(timeoutId);
           const duration = Date.now() - startTime;
 
           // Get response headers
