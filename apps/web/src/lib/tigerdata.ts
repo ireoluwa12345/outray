@@ -6,7 +6,7 @@ if (!process.env.TIGER_DATA_URL) {
   throw new Error("TIGER_DATA_URL environment variable is required");
 }
 const connectionString = process.env.TIGER_DATA_URL;
-export const pool = new Pool({
+export const tigerData = new Pool({
   connectionString,
   ssl:{ 
     rejectUnauthorized: false,
@@ -15,7 +15,7 @@ export const pool = new Pool({
 
 export async function query<T>(text: string, params?: unknown[]): Promise<T[]> {
   try {
-    const result = await pool.query(text, params);
+    const result = await tigerData.query(text, params);
     return result.rows as T[];
   } catch (error) {
     console.error('TimescaleDB query error:', error);
@@ -25,7 +25,7 @@ export async function query<T>(text: string, params?: unknown[]): Promise<T[]> {
 
 export async function execute(text: string, params?: unknown[]): Promise<void> {
   try {
-    await pool.query(text, params);
+    await tigerData.query(text, params);
   } catch (error) {
     console.error('TimescaleDB execute error:', error);
     throw error;
@@ -35,7 +35,7 @@ export async function execute(text: string, params?: unknown[]): Promise<void> {
 // Test connection function
 export async function testConnection(): Promise<boolean> {
   try {
-    const client = await pool.connect();
+    const client = await tigerData.connect();
     await client.query('SELECT 1');
     client.release();
     console.log('✅ TimescaleDB connection successful');
