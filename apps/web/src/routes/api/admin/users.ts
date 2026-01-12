@@ -69,7 +69,7 @@ export const Route = createFileRoute("/api/admin/users")({
               ? await db
                   .select({
                     userId: members.userId,
-                    count: count(),
+                    count: sql<number>`cast(count(${members.userId}) as integer)`,
                   })
                   .from(members)
                   .where(inArray(members.userId, userIds))
