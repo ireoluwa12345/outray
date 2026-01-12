@@ -27,8 +27,10 @@ export const Route = createFileRoute("/api/admin/organizations")({
 
         try {
           const url = new URL(request.url);
-          const page = parseInt(url.searchParams.get("page") || "1");
-          const limit = parseInt(url.searchParams.get("limit") || "20");
+          const pageParam = parseInt(url.searchParams.get("page") || "1");
+          const limitParam = parseInt(url.searchParams.get("limit") || "20");
+          const page = Number.isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
+          const limit = Number.isNaN(limitParam) || limitParam < 1 ? 20 : Math.min(limitParam, 100);
           const search = url.searchParams.get("search") || "";
           const offset = (page - 1) * limit;
 
