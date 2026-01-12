@@ -63,19 +63,28 @@ function AdminSubscriptionsPage() {
 
     const fetchSubscriptions = async () => {
       setIsLoading(true);
-      const res = await appClient.admin.subscriptions(token, {
-        page,
-        plan: planFilter,
-      });
-      if ("error" in res) {
-        console.error("Failed to fetch subscriptions:", res.error);
+    const fetchSubscriptions = async () => {
+      setIsLoading(true);
+      try {
+        const res = await appClient.admin.subscriptions(token, {
+          page,
+          plan: planFilter,
+        });
+        if ("error" in res) {
+          console.error("Failed to fetch subscriptions:", res.error);
+          return;
+        }
+        setSubscriptions(res.subscriptions);
+        setTotalPages(res.totalPages);
+        setTotal(res.total);
+        setStats(res.stats);
+      } catch (error) {
+        console.error("Failed to fetch subscriptions:", error);
+      } finally {
         setIsLoading(false);
         setInitialLoad(false);
-        return;
       }
-      setSubscriptions(res.subscriptions);
-      setTotalPages(res.totalPages);
-      setTotal(res.total);
+    };
       setStats(res.stats);
       setIsLoading(false);
       setInitialLoad(false);
