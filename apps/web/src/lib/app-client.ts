@@ -266,6 +266,46 @@ export const appClient = {
       }>("get", `/api/admin/charts`, {
         headers: { Authorization: `Bearer ${token}` },
       }),
+
+    organization: async (token: string, slug: string) =>
+      apiCall<{
+        organization: {
+          id: string;
+          name: string;
+          slug: string;
+          logo: string | null;
+          createdAt: Date;
+        };
+        subscription: {
+          id?: string;
+          plan: string;
+          status: string;
+          polarCustomerId?: string | null;
+          polarSubscriptionId?: string | null;
+          currentPeriodEnd?: Date | null;
+          cancelAtPeriodEnd?: boolean;
+        };
+        stats: {
+          members: number;
+          activeTunnels: number;
+          totalTunnels: number;
+          subdomains: number;
+          domains: number;
+        };
+        members: Array<{ id: string; userId: string; role: string; createdAt: Date }>;
+      }>("get", `/api/admin/organizations/${slug}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+
+    updateOrganization: async (
+      token: string,
+      slug: string,
+      data: { name?: string; slug?: string; plan?: string; status?: string }
+    ) =>
+      apiCall<{ success: boolean }>("patch", `/api/admin/organizations/${slug}`, {
+        data,
+        headers: { Authorization: `Bearer ${token}` },
+      }),
   },
 
   cli: {
