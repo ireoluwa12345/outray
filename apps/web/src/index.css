@@ -51,6 +51,14 @@ body {
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
+/* Ensure interactive elements show pointer cursor */
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+/* Disabled buttons should indicate they are not clickable */
+button:disabled {
+  cursor: not-allowed;
 /* Hide scrollbar while maintaining scroll functionality */
 .scrollbar-hide {
   -ms-overflow-style: none;  /* IE and Edge */
