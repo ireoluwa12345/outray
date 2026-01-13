@@ -270,7 +270,7 @@ function Onboarding() {
 
             <button
               type="submit"
-              disabled={loading || isCheckingSlug}
+              disabled={loading || isCheckingSlug || !!error}
               className="group flex w-full items-center justify-center gap-2 rounded-2xl bg-white hover:bg-accent px-4 py-3.5 text-sm font-bold text-black transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100 shadow-lg shadow-white/5 hover:shadow-accent/20"
             >
               {loading ? (
