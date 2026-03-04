@@ -35,6 +35,11 @@ export type {
   UDPResponseMessage,
   ErrorMessage,
   ErrorCode,
+  // WebSocket passthrough
+  WSUpgradeMessage,
+  WSUpgradeResponseMessage,
+  WSFrameMessage,
+  WSCloseMessage,
 } from "./types";
 
 // Error codes constant
