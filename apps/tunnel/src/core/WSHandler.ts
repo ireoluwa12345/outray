@@ -9,7 +9,12 @@ import {
   TCPDataMessage,
   TCPCloseMessage,
   UDPResponseMessage,
+  WSUpgradeResponseMessage,
+  WSFrameMessage,
+  WSCloseMessage,
 } from "./Protocol";
+import { WSProxy } from "./WSProxy";
+
 import { generateId, generateSubdomain } from "../../../../shared/utils";
 import { config } from "../config";
 
@@ -18,6 +23,7 @@ export class WSHandler {
   private router: TunnelRouter;
   private tcpProxy: TCPProxy;
   private udpProxy: UDPProxy;
+  private wsProxy: WSProxy | null;
   private webApiUrl: string;
   private heartbeatInterval: NodeJS.Timeout | null = null;
   private readonly HEARTBEAT_INTERVAL_MS = 30000; // 30 seconds
@@ -28,11 +34,13 @@ export class WSHandler {
     router: TunnelRouter,
     tcpProxy?: TCPProxy,
     udpProxy?: UDPProxy,
+    wsProxy?: WSProxy,
   ) {
     this.router = router;
     this.wss = wss;
     this.tcpProxy = tcpProxy || new TCPProxy();
     this.udpProxy = udpProxy || new UDPProxy();
+    this.wsProxy = wsProxy || null;
     this.webApiUrl = process.env.WEB_API_URL || "http://localhost:3000/api";
     this.setupWebSocketServer();
     this.startHeartbeatCheck();
@@ -765,6 +773,15 @@ export class WSHandler {
             // Handle UDP response from client
             const udpMessage = message as UDPResponseMessage;
             this.udpProxy.handleClientResponse(udpMessage);
+          } else if (message.type === "ws_upgrade_response" && tunnelId && this.wsProxy) {
+            // Handle WebSocket upgrade response from client
+            this.wsProxy.handleUpgradeResponse(message as WSUpgradeResponseMessage);
+          } else if (message.type === "ws_frame" && tunnelId && this.wsProxy) {
+            // Handle WebSocket frame from client's local WS
+            this.wsProxy.handleFrame(message as WSFrameMessage);
+          } else if (message.type === "ws_close" && tunnelId && this.wsProxy) {
+            // Handle WebSocket close from client's local WS
+            this.wsProxy.handleClose(message as WSCloseMessage);
           } else if (tunnelId) {
             this.router.handleMessage(tunnelId, message);
           }
