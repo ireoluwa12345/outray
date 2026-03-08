@@ -61,6 +61,32 @@ export class HTTPProxy {
       });
 
       const metadata = this.router.getTunnelMetadata(tunnelId);
+
+      if (metadata?.password) {
+        const authHeader = req.headers.authorization;
+        let authenticated = false;
+
+        if (authHeader && authHeader.startsWith("Basic ")) {
+          const base64Credentials = authHeader.substring(6);
+          const credentials = Buffer.from(base64Credentials, "base64").toString("ascii");
+          const colonIdx = credentials.indexOf(":");
+          if (colonIdx !== -1) {
+            const password = credentials.substring(colonIdx + 1);
+            if (password === metadata.password) {
+              authenticated = true;
+            }
+          }
+        }
+
+        if (!authenticated) {
+          res.writeHead(401, {
+            "WWW-Authenticate": 'Basic realm="Restricted Tunnel"',
+            "Content-Type": "text/plain",
+          });
+          res.end("Unauthorized");
+          return;
+        }
+      }
       const redis = this.router.getRedis();
       const bandwidthKey =
         metadata?.organizationId && redis
