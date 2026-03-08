@@ -14,6 +14,7 @@ export interface TunnelConfig {
   remote_port?: number;
   org?: string;
   local?: boolean;
+  password?: string;
 }
 
 export interface GlobalConfig {
@@ -36,6 +37,7 @@ export interface ParsedTunnelConfig {
   remotePort?: number;
   org?: string;
   local?: boolean;
+  password?: string;
 }
 
 const portSchema = Joi.number().integer().min(1).max(65535).required();
@@ -69,6 +71,7 @@ const tunnelConfigSchema = Joi.object({
   remote_port: Joi.number().integer().min(1).max(65535).optional(),
   org: Joi.string().optional(),
   local: Joi.boolean().optional().default(false),
+  password: Joi.string().optional(),
 }).custom((value: TunnelConfig, helpers: Joi.CustomHelpers) => {
   const protocol = value.protocol;
 
@@ -207,6 +210,7 @@ export class TomlConfigParser {
         remotePort: tunnel.remote_port,
         org: tunnel.org || globalConfig?.org,
         local: tunnel.local,
+        password: tunnel.password,
       });
     }
 
