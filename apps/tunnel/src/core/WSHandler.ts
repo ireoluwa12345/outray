@@ -345,6 +345,7 @@ export class WSHandler {
                   bandwidthLimit,
                   retentionDays,
                   fullCaptureEnabled,
+                  password: message.password,
                 });
 
                 tunnelId = tunnelIdForProtocol;
@@ -422,6 +423,7 @@ export class WSHandler {
                   bandwidthLimit,
                   retentionDays,
                   fullCaptureEnabled,
+                  password: message.password,
                 });
 
                 tunnelId = tunnelIdForProtocol;
@@ -515,6 +517,7 @@ export class WSHandler {
                   bandwidthLimit,
                   plan,
                   fullCaptureEnabled,
+                  password: message.password,
                 },
               );
 
@@ -582,6 +585,7 @@ export class WSHandler {
                     bandwidthLimit,
                     retentionDays,
                     fullCaptureEnabled,
+                    password: message.password,
                   },
                   message.forceTakeover || false,
                 );
@@ -619,6 +623,7 @@ export class WSHandler {
                       bandwidthLimit,
                       retentionDays,
                       fullCaptureEnabled,
+                      password: message.password,
                     },
                   );
                   if (reservationAcquired) {
@@ -641,6 +646,7 @@ export class WSHandler {
                     bandwidthLimit,
                     retentionDays,
                     fullCaptureEnabled,
+                    password: message.password,
                   },
                 );
                 if (reservationAcquired) {
@@ -730,6 +736,7 @@ export class WSHandler {
                 retentionDays,
                 plan,
                 fullCaptureEnabled,
+                password: message.password,
               },
             );
 
