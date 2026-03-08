@@ -99,6 +99,7 @@ export interface OpenTunnelMessage {
   forceTakeover?: boolean;
   protocol?: TunnelProtocol;
   remotePort?: number;
+  password?: string;
 }
 
 export interface TunnelResponseMessage {
